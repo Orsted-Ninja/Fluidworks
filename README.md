@@ -13,7 +13,7 @@
 
   <br>
   
-  **✨ My Miniproject by [Orsted-Ninja](https://github.com/Orsted-Ninja), with contributor [Abhinav Manoj](https://github.com/abhinavmanoj05)! ✨**
+  **✨ Miniproject by [Orsted-Ninja](https://github.com/Orsted-Ninja) and [Abhinav Manoj](https://github.com/abhinavmanoj05)! ✨**
   
   *Special Mentions: The main scene, physics setup, physical interactions, and the MLP were extensively handled and fixed up by Orsted-Ninja.*
 
