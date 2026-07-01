@@ -1,0 +1,50 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="boundary-conditions-view">
+        <ui:VisualElement name="windtunnel-boundary-section">
+            <ui:Label text="Boundary Conditions" class="property-group-header" />
+            <ui:Slider name="bc-inlet-velocity-slider" label="Inlet Velocity (m/s)" low-value="1" high-value="150" value="50" />
+            <ui:Slider name="bc-angle-of-attack-slider" label="Yaw / Crosswind (deg)" low-value="-45" high-value="45" value="0" />
+            <ui:Slider name="bc-turbulence-slider" label="Inlet Disturbance (%)" low-value="0.0" high-value="20.0" value="1.0" />
+            <ui:Toggle name="bc-custom-direction-toggle" label="Use Custom Inlet Direction" />
+            <ui:DropdownField name="bc-inlet-source-dropdown" label="Inlet Face" choices="Auto,Left,Right,Front,Back,Top,Bottom" value="Auto" />
+            <ui:DropdownField name="bc-flow-axis-dropdown" label="Tunnel Axis" choices="X Axis,Y Axis,Z Axis" value="X Axis" />
+            <ui:Slider name="bc-dir-x-slider" label="Direction X" low-value="-1" high-value="1" value="1" />
+            <ui:Slider name="bc-dir-y-slider" label="Direction Y" low-value="-1" high-value="1" value="0" />
+            <ui:Slider name="bc-dir-z-slider" label="Direction Z" low-value="-1" high-value="1" value="0" />
+            <ui:FloatField name="bc-outlet-pressure-field" label="Outlet Pressure (Pa)" value="101325" />
+            <ui:Toggle name="bc-moving-ground-toggle" label="Moving Ground Plane" value="true" />
+            <ui:Slider name="bc-ground-speed-scale-slider" label="Ground Speed Factor" low-value="0.0" high-value="1.5" value="1.0" />
+            <ui:Toggle name="bc-wheel-rotation-toggle" label="Wheel Rotation Proxies" value="true" />
+            <ui:Toggle name="bc-flip-direction-toggle" label="Flip Vehicle Direction" value="true" />
+
+            <ui:Label text="Tunnel Display" class="property-group-header" style="margin-top: 12px;" />
+            <ui:Slider name="bc-inlet-panel-width-slider" label="Inlet Width Scale" low-value="0.2" high-value="1.2" value="1.0" />
+            <ui:Slider name="bc-inlet-panel-height-slider" label="Inlet Height Scale" low-value="0.2" high-value="1.2" value="1.0" />
+            <ui:Slider name="bc-outlet-panel-width-slider" label="Outlet Width Scale" low-value="0.2" high-value="1.2" value="1.0" />
+            <ui:Slider name="bc-outlet-panel-height-slider" label="Outlet Height Scale" low-value="0.2" high-value="1.2" value="1.0" />
+            <ui:Slider name="bc-floor-length-scale-slider" label="Floor Length Scale" low-value="0.4" high-value="1.2" value="1.0" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="pipeflow-boundary-section" style="display: none;">
+            <ui:Label text="Internal Aero Setup" class="property-group-header" style="-unity-font-style: bold; margin-top: 8px;" />
+            
+            <ui:Label text="Inlet Conditions" class="property-group-header" style="margin-top: 8px;" />
+            <ui:Slider name="bc-pipe-inlet-velocity-slider" label="Inlet Velocity (m/s)" low-value="0.1" high-value="100" value="5" />
+            <ui:Slider name="bc-pipe-turbulence-slider" label="Inlet Turbulence (%)" low-value="0.0" high-value="20.0" value="1.0" />
+            <ui:DropdownField name="bc-pipe-flow-axis-dropdown" label="Flow Axis" choices="X Axis,Y Axis,Z Axis" value="X Axis" />
+        </ui:VisualElement>
+
+        <ui:VisualElement name="dambreak-boundary-section" style="display: none;">
+            <ui:Label text="Free-Surface Setup" class="property-group-header" style="-unity-font-style: bold; margin-top: 8px;" />
+            <ui:Label name="dambreak-boundary-status" text="Load Dam Break to edit tank size." style="font-size: 10px; color: #aaaaaa; margin-bottom: 6px; white-space: normal;" />
+
+            <ui:Label text="Simulation Box" class="property-group-header" style="margin-top: 4px;" />
+            <ui:Slider name="bc-dam-size-x-slider" label="Tank Width X (m)" low-value="1.0" high-value="20.0" value="4.0" show-input-field="true" />
+            <ui:Slider name="bc-dam-size-y-slider" label="Tank Height Y (m)" low-value="1.0" high-value="20.0" value="4.0" show-input-field="true" />
+            <ui:Slider name="bc-dam-size-z-slider" label="Tank Depth Z (m)" low-value="1.0" high-value="20.0" value="4.0" show-input-field="true" />
+        </ui:VisualElement>
+
+        <ui:Label text="Model Transform" class="property-group-header" style="-unity-font-style: bold; margin-top: 12px;" />
+        <ui:Slider name="bc-model-scale-slider" label="Model Scale" low-value="0.2" high-value="3.0" value="1.0" />
+    </ui:VisualElement>
+</ui:UXML>

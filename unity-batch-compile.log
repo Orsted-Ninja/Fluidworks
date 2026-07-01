@@ -1,0 +1,19 @@
+[Licensing::Module] Trying to connect to existing licensing client channel...
+Built from '6000.3/respin/6000.3.1f1-f56f53296c2c' branch; Version is '6000.3.1f1 (37142da19a94) revision 3609645'; Using compiler version '194234433'; Build Type 'Release'
+[Licensing::IpcConnector] Successfully connected to: "LicenseClient-abhin" at "2026-03-24T19:37:55.7189704Z"
+OS: 'Windows 11  (10.0.26200) 64bit CoreSingleLanguage' Language: 'en' Physical Memory: 16068 MB
+BatchMode: 1, IsHumanControllingUs: 0, StartBugReporterOnCrash: 0, Is64bit: 1
+Date: 2026-03-24T19:37:55Z
+
+COMMAND LINE ARGUMENTS:
+C:\Program Files\Unity\Hub\Editor\6000.3.1f1\Editor\Unity.exe
+-batchmode
+-nographics
+-quit
+-projectPath
+C:\Users\abhin\Desktop\project-stuff\FluidWorks
+-logFile
+C:\Users\abhin\Desktop\project-stuff\FluidWorks\unity-batch-compile.log
+Successfully changed project path to: C:\Users\abhin\Desktop\project-stuff\FluidWorks
+C:/Users/abhin/Desktop/project-stuff/FluidWorks
+Exiting without the bug reporter. Application will terminate with return code 1

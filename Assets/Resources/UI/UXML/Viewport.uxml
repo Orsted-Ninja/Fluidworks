@@ -1,0 +1,23 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="viewport" style="flex-grow: 1; justify-content: center; align-items: center;">
+        
+        <!-- This element will typically display a RenderTexture from the 3D scene. -->
+        <!-- For the purpose of UI layout, it's a simple container. -->
+
+        <!-- Initial "No Model Loaded" message -->
+        <ui:VisualElement name="no-model-message" class="overlay-panel">
+            <ui:Label text="No Model Loaded" class="overlay-title" />
+            <ui:Label text="Upload a model or select a quick setup to begin." class="overlay-subtitle" />
+        </ui:VisualElement>
+
+        <!-- Quick Setup Panel (Initially hidden) -->
+        <ui:VisualElement name="quick-setup-panel" class="overlay-panel" style="position: absolute; top: 10px; left: 10px; display: none;">
+            <ui:Label text="Quick Setup" class="section-header" />
+            <ui:Button name="quick-setup-wind-tunnel-button" text="Air Wind Tunnel" class="quick-setup-button" />
+            <ui:Button name="quick-setup-dam-break-button" text="Water Dam Break" class="quick-setup-button" />
+            <ui:Button name="quick-setup-mpm-button" text="MPM Elasticity" class="quick-setup-button" />
+        </ui:VisualElement>
+        
+    </ui:VisualElement>
+</ui:UXML>
+

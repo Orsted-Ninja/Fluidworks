@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FluidWorks CFD Simulation Report</title>
+    <style>
+        :root {
+            --primary-color: #0056b3;
+            --secondary-color: #6c757d;
+            --border-color: #dee2e6;
+            --text-color: #333;
+            --header-height: 60px;
+            --footer-height: 40px;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+        }
+
+        .page {
+            width: 210mm;
+            min-height: 297mm;
+            padding: 20mm;
+            margin: 10mm auto;
+            background: white;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            position: relative;
+            box-sizing: border-box;
+            page-break-after: always;
+        }
+
+        @media print {
+            body { background: none; }
+            .page { margin: 0; box-shadow: none; }
+        }
+
+        header {
+            position: absolute;
+            top: 10mm;
+            left: 20mm;
+            right: 20mm;
+            height: var(--header-height);
+            border-bottom: 2px solid var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-logo {
+            display: block;
+            max-width: 160px;
+            max-height: 34px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+        }
+
+        .header-title {
+            font-weight: bold;
+            color: var(--primary-color);
+            font-size: 14pt;
+        }
+
+        footer {
+            position: absolute;
+            bottom: 10mm;
+            left: 20mm;
+            right: 20mm;
+            height: var(--footer-height);
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 8pt;
+            color: var(--secondary-color);
+        }
+
+        /* Cover Page */
+        .cover-page {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            height: 100%;
+        }
+
+        .cover-logo {
+            display: block;
+            width: auto;
+            max-width: 260px;
+            max-height: 72px;
+            margin: 0 auto 34px;
+            object-fit: contain;
+        }
+
+        .cover-title {
+            font-size: 36pt;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #000;
+            text-transform: uppercase;
+        }
+
+        .cover-subtitle {
+            font-size: 18pt;
+            color: var(--secondary-color);
+            margin-bottom: 50px;
+        }
+
+        .cover-details {
+            margin-top: 50px;
+            font-size: 12pt;
+            text-align: left;
+            width: 80%;
+            border-top: 2px solid var(--primary-color);
+            padding-top: 20px;
+        }
+
+        .cover-details div {
+            margin-bottom: 10px;
+        }
+
+        /* Table of Contents */
+        .toc h2 {
+            margin-top: 50px;
+            border-bottom: 1px solid var(--text-color);
+            padding-bottom: 10px;
+        }
+
+        .toc-list {
+            list-style: none;
+            padding: 0;
+        }
+
+        .toc-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+            font-size: 12pt;
+        }
+
+        .toc-dots {
+            flex-grow: 1;
+            border-bottom: 1px dotted #ccc;
+            margin: 0 10px 5px;
+        }
+
+        /* General Content Styling */
+        h1, h2, h3 {
+            color: var(--primary-color);
+            margin-top: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 10pt;
+        }
+
+        table, th, td {
+            border: 1px solid var(--border-color);
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #f8f9fa;
+            font-weight: bold;
+        }
+
+        .image-container {
+            width: 100%;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .image-container img {
+            max-width: 100%;
+            border: 1px solid var(--border-color);
+        }
+
+        .image-caption {
+            font-style: italic;
+            font-size: 9pt;
+            color: var(--secondary-color);
+            margin-top: 5px;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .conclusion-box {
+            background-color: #f0f7ff;
+            border-left: 5px solid var(--primary-color);
+            padding: 20px;
+            margin: 20px 0;
+            font-style: italic;
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Cover Page -->
+    <div class="page">
+        <div class="cover-page">
+            <img src="{LOGO_IMAGE}" alt="FluidWorks Logo" class="cover-logo">
+            <div class="cover-title">{PROJECT_NAME}</div>
+            <div class="cover-subtitle">FluidWorks CFD Simulation Report</div>
+            
+            <div class="image-container" style="margin: 50px 0;">
+                <img src="{STREAMLINE_IMAGE}" alt="Simulation Preview" style="border: none; opacity: 0.8;">
+            </div>
+
+            <div class="cover-details">
+                <div><strong>Model Name:</strong> {MODEL_NAME}</div>
+                <div><strong>Date:</strong> {DATE}</div>
+                <div><strong>Software Version:</strong> {SOFTWARE_VERSION}</div>
+                <div><strong>Accuracy:</strong> REGULAR</div>
+            </div>
+        </div>
+        <footer>
+            <div>Generated using FluidWorks CFD Simulation Platform | {DATE}</div>
+            <div>Page 1</div>
+        </footer>
+    </div>
+
+    <!-- Table of Contents -->
+    <div class="page">
+        <header>
+            <div class="header-title">FluidWorks CFD Simulation Report</div>
+            <img src="{LOGO_IMAGE}" alt="FluidWorks Logo" class="header-logo">
+        </header>
+        <div class="toc" style="margin-top: 80px;">
+            <h2>TABLE OF CONTENT</h2>
+            <ul class="toc-list">
+                <li class="toc-item"><span>INTRODUCTION</span><span class="toc-dots"></span><span>3</span></li>
+                <li class="toc-item"><span>GEOMETRY DETAILS</span><span class="toc-dots"></span><span>3</span></li>
+                <li class="toc-item"><span>SIMULATION SETUP</span><span class="toc-dots"></span><span>4</span></li>
+                <li class="toc-item"><span>SOLVER DIAGNOSTICS</span><span class="toc-dots"></span><span>5</span></li>
+                <li class="toc-item"><span>VISUALIZATION RESULTS</span><span class="toc-dots"></span><span>6</span></li>
+                <li class="toc-item"><span>CONCLUSION</span><span class="toc-dots"></span><span>10</span></li>
+            </ul>
+        </div>
+        <footer>
+            <div>Generated using FluidWorks CFD Simulation Platform | {DATE}</div>
+            <div>Page 2</div>
+        </footer>
+    </div>
+
+    <!-- Introduction & Geometry Details -->
+    <div class="page">
+        <header>
+            <div class="header-title">FluidWorks CFD Simulation Report</div>
+            <img src="{LOGO_IMAGE}" alt="FluidWorks Logo" class="header-logo">
+        </header>
+        <div style="margin-top: 80px;">
+            <h1>INTRODUCTION</h1>
+            <p>
+                Thank you for choosing FluidWorks to analyze & optimize the aerodynamics of your design. We hope that this report will provide you with the necessary insight. Should you require further assistance, feel free to get in touch with our engineering team.
+            </p>
+
+            <h1>GEOMETRY DETAILS</h1>
+            <p>These are the dimensions of the bounding box around the object after rotation and scaling.</p>
+            <table>
+                <tr>
+                    <th>Parameter</th>
+                    <th>Value</th>
+                </tr>
+                <tr>
+                    <td>Model Name</td>
+                    <td>{MODEL_NAME}</td>
+                </tr>
+                <tr>
+                    <td>Bounding Box X [m]</td>
+                    <td>{GRID_SIZE}</td>
+                </tr>
+                <tr>
+                    <td>Camera Position</td>
+                    <td>{CAMERA_POSITION}</td>
+                </tr>
+            </table>
+
+            <div class="image-container">
+                <img src="{VELOCITY_IMAGE}" alt="Model View">
+                <div class="image-caption">Primary view of the analyzed geometry</div>
+            </div>
+        </div>
+        <footer>
+            <div>Generated using FluidWorks CFD Simulation Platform | {DATE}</div>
+            <div>Page 3</div>
+        </footer>
+    </div>
+
+    <!-- Simulation Setup -->
+    <div class="page">
+        <header>
+            <div class="header-title">FluidWorks CFD Simulation Report</div>
+            <img src="{LOGO_IMAGE}" alt="FluidWorks Logo" class="header-logo">
+        </header>
+        <div style="margin-top: 80px;">
+            <h1>SIMULATION SETUP</h1>
+            <table>
+                <tr>
+                    <th colspan="2">Physics Settings</th>
+                </tr>
+                <tr>
+                    <td>Viscosity [Pa·s]</td>
+                    <td>{VISCOSITY}</td>
+                </tr>
+                <tr>
+                    <td>Density [kg/m³]</td>
+                    <td>{DENSITY}</td>
+                </tr>
+                <tr>
+                    <td>Fluid Type</td>
+                    <td>Air (Newtonian)</td>
+                </tr>
+                <tr>
+                    <th colspan="2">Numerical Settings</th>
+                </tr>
+                <tr>
+                    <td>Timestep [s]</td>
+                    <td>{TIMESTEP}</td>
+                </tr>
+                <tr>
+                    <td>Iteration Count</td>
+                    <td>{ITERATION_COUNT}</td>
+                </tr>
+                <tr>
+                    <td>Solver Type</td>
+                    <td>RANS - Steady State</td>
+                </tr>
+            </table>
+        </div>
+        <footer>
+            <div>Generated using FluidWorks CFD Simulation Platform | {DATE}</div>
+            <div>Page 4</div>
+        </footer>
+    </div>
+
+    <!-- Solver Diagnostics -->
+    <div class="page">
+        <header>
+            <div class="header-title">FluidWorks CFD Simulation Report</div>
+            <img src="{LOGO_IMAGE}" alt="FluidWorks Logo" class="header-logo">
+        </header>
+        <div style="margin-top: 80px;">
+            <h1>SOLVER DIAGNOSTICS</h1>
+            <p>The following metrics provide a quantitative summary of the simulation convergence and performance.</p>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Result</th>
+                </tr>
+                <tr>
+                    <td>Mean Velocity [m/s]</td>
+                    <td>{MEAN_VELOCITY}</td>
+                </tr>
+                <tr>
+                    <td>Max Velocity [m/s]</td>
+                    <td>{MAX_VELOCITY}</td>
+                </tr>
+                <tr>
+                    <td>Pressure Drop [Pa]</td>
+                    <td>{PRESSURE_DROP}</td>
+                </tr>
+                <tr>
+                    <td>Wall Shear Stress [Pa]</td>
+                    <td>{WALL_SHEAR}</td>
+                </tr>
+                <tr>
+                    <td>Vorticity [1/s]</td>
+                    <td>{VORTICITY}</td>
+                </tr>
+                <tr>
+                    <td>Divergence Error</td>
+                    <td>{DIVERGENCE_ERROR}</td>
+                </tr>
+            </table>
+
+            <h2>LIVE RESULTS SUMMARY</h2>
+            <p>This section mirrors the active mode's Results &amp; Export values at report time.</p>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Result</th>
+                </tr>
+                {RESULTS_OVERVIEW_ROWS}
+            </table>
+
+            <h2>MODE-SPECIFIC RESULTS</h2>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Result</th>
+                </tr>
+                {MODE_SPECIFIC_ROWS}
+            </table>
+        </div>
+        <footer>
+            <div>Generated using FluidWorks CFD Simulation Platform | {DATE}</div>
+            <div>Page 5</div>
+        </footer>
+    </div>
+
+    <!-- Visualization Results: Streamlines -->
+    <div class="page">
+        <header>
+            <div class="header-title">FluidWorks CFD Simulation Report</div>
+            <img src="{LOGO_IMAGE}" alt="FluidWorks Logo" class="header-logo">
+        </header>
+        <div style="margin-top: 80px;">
+            <h1>VISUALIZATION RESULTS</h1>
+            <h3>FLOW STREAMLINES</h3>
+            <div class="image-container">
+                <img src="{STREAMLINE_IMAGE}" alt="Streamline Visualization">
+                <div class="image-caption">Primary streamline visualization of the active flow field.</div>
+            </div>
+            <p>
+                Streamlines show the dominant path followed by the flow around the model and help reveal acceleration zones, wake shape, and large-scale separation behavior.
+            </p>
+        </div>
+        <footer>
+            <div>Generated using FluidWorks CFD Simulation Platform | {DATE}</div>
+            <div>Page 6</div>
+        </footer>
+    </div>
+
+    <!-- Visualization Results: Horizontal Streamlines -->
+    <div class="page">
+        <header>
+            <div class="header-title">FluidWorks CFD Simulation Report</div>
+            <img src="{LOGO_IMAGE}" alt="FluidWorks Logo" class="header-logo">
+        </header>
+        <div style="margin-top: 80px;">
+            <h3>HORIZONTAL STREAMLINES</h3>
+            <div class="image-container">
+                <img src="{HORIZONTAL_STREAMLINE_IMAGE}" alt="Horizontal Streamline Visualization">
+                <div class="image-caption">Horizontal streamline pass highlighting lateral flow behavior around the body.</div>
+            </div>
+            <p>
+                This view emphasizes sidewash, lateral deflection, and horizontal wake development, making it easier to inspect symmetry and side-surface interaction.
+            </p>
+        </div>
+        <footer>
+            <div>Generated using FluidWorks CFD Simulation Platform | {DATE}</div>
+            <div>Page 7</div>
+        </footer>
+    </div>
+
+    <!-- Visualization Results: Vertical Streamlines -->
+    <div class="page">
+        <header>
+            <div class="header-title">FluidWorks CFD Simulation Report</div>
+            <img src="{LOGO_IMAGE}" alt="FluidWorks Logo" class="header-logo">
+        </header>
+        <div style="margin-top: 80px;">
+            <h3>VERTICAL STREAMLINES</h3>
+            <div class="image-container">
+                <img src="{VERTICAL_STREAMLINE_IMAGE}" alt="Vertical Streamline Visualization">
+                <div class="image-caption">Vertical streamline pass highlighting roof flow, ground interaction, and wake rise.</div>
+            </div>
+            <p>
+                This view is useful for identifying vertical deflection, roof acceleration, underbody interaction, and the way the wake lifts or settles behind the geometry.
+            </p>
+        </div>
+        <footer>
+            <div>Generated using FluidWorks CFD Simulation Platform | {DATE}</div>
+            <div>Page 8</div>
+        </footer>
+    </div>
+
+    <!-- Visualization Results: Surface Pressure -->
+    <div class="page">
+        <header>
+            <div class="header-title">FluidWorks CFD Simulation Report</div>
+            <img src="{LOGO_IMAGE}" alt="FluidWorks Logo" class="header-logo">
+        </header>
+        <div style="margin-top: 80px;">
+            <h3>SURFACE PRESSURE</h3>
+            <div class="image-container">
+                <img src="{SURFACE_PRESSURE_IMAGE}" alt="Surface Pressure Visualization">
+                <div class="image-caption">Surface pressure contour mapped directly onto the model body.</div>
+            </div>
+            <p>
+                Surface pressure highlights stagnation zones, suction regions, and local loading trends that contribute directly to the pressure component of aerodynamic drag and lift.
+            </p>
+        </div>
+        <footer>
+            <div>Generated using FluidWorks CFD Simulation Platform | {DATE}</div>
+            <div>Page 9</div>
+        </footer>
+    </div>
+
+    <!-- Visualization Results: Surface Friction -->
+    <div class="page">
+        <header>
+            <div class="header-title">FluidWorks CFD Simulation Report</div>
+            <img src="{LOGO_IMAGE}" alt="FluidWorks Logo" class="header-logo">
+        </header>
+        <div style="margin-top: 80px;">
+            <h3>SURFACE FRICTION</h3>
+            <div class="image-container">
+                <img src="{SURFACE_FRICTION_IMAGE}" alt="Surface Friction Visualization">
+                <div class="image-caption">Surface friction contour showing the wall-shear response on the body.</div>
+            </div>
+            <p>
+                Surface friction indicates where the flow is strongly attached, where shear intensifies, and where the body is likely experiencing stronger skin-friction effects.
+            </p>
+        </div>
+        <footer>
+            <div>Generated using FluidWorks CFD Simulation Platform | {DATE}</div>
+            <div>Page 10</div>
+        </footer>
+    </div>
+
+    <!-- Conclusion -->
+    <div class="page">
+        <header>
+            <div class="header-title">FluidWorks CFD Simulation Report</div>
+            <img src="{LOGO_IMAGE}" alt="FluidWorks Logo" class="header-logo">
+        </header>
+        <div style="margin-top: 80px;">
+            <h1>CONCLUSION</h1>
+            <div class="conclusion-box">
+                {AUTO_CONCLUSION}
+            </div>
+
+            <h2>ASSESSMENT SNAPSHOT</h2>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Result</th>
+                </tr>
+                {ASSESSMENT_ROWS}
+            </table>
+
+            <h2>MODEL QUALITY</h2>
+            <table>
+                <tr>
+                    <th>Metric</th>
+                    <th>Result</th>
+                </tr>
+                {MODEL_QUALITY_ROWS}
+            </table>
+
+            <p>
+                This report was automatically generated by the FluidWorks CFD Simulation Platform. The results provided are based on the simulation parameters defined in the setup section. For detailed engineering optimization based on these results, please consult with an aerodynamicist.
+            </p>
+        </div>
+        <footer>
+            <div>Generated using FluidWorks CFD Simulation Platform | {DATE}</div>
+            <div>Page 11</div>
+        </footer>
+    </div>
+
+</body>
+</html>

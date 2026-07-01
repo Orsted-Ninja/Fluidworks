@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="fluid-properties-view">
+        <ui:Label text="Fluid Properties" class="property-group-header" />
+        <ui:Slider name="fluid-density-slider" label="Density (kg/m3)" low-value="0.1" high-value="1500" value="1.225" show-input-field="true" />
+        <ui:Slider name="fluid-viscosity-slider" label="Dynamic Viscosity (Pa.s)" low-value="0.000001" high-value="0.02" value="0.0000181" show-input-field="true" />
+        
+        <ui:Label text="Physics Model" class="property-group-header" style="margin-top: 12px;" />
+        <ui:Toggle name="fluid-turbulence-active-toggle" label="Turbulence Modeling" value="true" />
+        <ui:DropdownField name="fluid-model-dropdown" label="Solver Model" choices="Laminar,LES (Smagorinsky),RANS (k-epsilon)" value="LES (Smagorinsky)" />
+    </ui:VisualElement>
+</ui:UXML>

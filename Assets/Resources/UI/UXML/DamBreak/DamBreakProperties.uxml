@@ -1,0 +1,93 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="dam-break-properties-view" style="flex-grow: 1;">
+        <!-- Tab Bar -->
+        <ui:VisualElement name="dam-break-tab-bar" style="flex-direction: row; height: 32px; background-color: rgba(0,0,0,0.3); border-bottom-width: 1px; border-bottom-color: rgba(255,255,255,0.1); margin-bottom: 8px;">
+            <ui:Button name="dam-break-btn-settings" text="Dam Break" class="tab-button tab-button-active" style="flex-grow: 1; height: 100%; border-width: 0; background-color: transparent; color: white; -unity-font-style: bold; font-size: 11px;"/>
+            <ui:Button name="dam-break-btn-model" text="Model" class="tab-button" style="flex-grow: 1; height: 100%; border-width: 0; background-color: transparent; color: rgba(255,255,255,0.5); -unity-font-style: bold; font-size: 11px;"/>
+        </ui:VisualElement>
+
+        <!-- Dam Break Settings Tab -->
+        <ui:VisualElement name="dam-break-tab-settings" style="flex-grow: 1;">
+            <ui:Label text="Initial Conditions (Requires Reset)" class="property-group-header" style="-unity-font-style: bold; color: #ffeb3b; margin-top: 10px;" />
+            <ui:SliderInt name="particle-count-slider" label="Particle Count" low-value="1000" high-value="100000" value="42875" />
+            <ui:Slider name="water-fill-slider" label="Water Fill Ratio" low-value="0.1" high-value="1.0" value="0.5" />
+            <ui:Button name="apply-reset-btn" text="Apply &amp; Reset Simulation" class="action-button" style="margin-top: 5px; margin-bottom: 15px; background-color: #d32f2f; color: white; -unity-font-style: bold; padding: 5px;" />
+
+            <ui:Label text="Fluid Properties (Live)" class="property-group-header" style="-unity-font-style: bold; margin-top: 10px;" />
+            <ui:Slider name="particle-transparency-slider" label="Particle Alpha" low-value="0.1" high-value="1.0" value="0.95" />
+            <ui:Slider name="density-slider" label="Density (kg/m^3)" low-value="100" high-value="2000" value="630" />
+            <ui:Slider name="viscosity-slider" label="Viscosity (Pa*s)" low-value="0.0" high-value="0.1" value="0.001" />
+
+            <ui:Label text="Simulation Controls (Live)" class="property-group-header" style="-unity-font-style: bold; margin-top: 10px;" />
+            <ui:Slider name="gravity-slider" label="Gravity (m/s²)" low-value="-30" high-value="0" value="-10" />
+            <ui:Slider name="timescale-slider" label="Time Scale" low-value="0.1" high-value="3.0" value="0.9" />
+            <ui:SliderInt name="iterations-slider" label="Iterations / Frame" low-value="1" high-value="10" value="4" />
+            <ui:Slider name="max-velocity-slider" label="Velocity Clamp" low-value="5" high-value="200" value="50" />
+
+            <ui:Button name="generate-report-btn" text="Generate PDF Report" class="action-button" style="
+                margin-top: 15px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                -unity-font-style: bold;
+                background-color: rgba(40, 195, 240, 0.15);
+                border-color: rgba(40, 195, 240, 0.40);
+            "/>
+        </ui:VisualElement>
+
+        <!-- Model Tab -->
+        <ui:VisualElement name="dam-break-tab-model" style="display: none; padding-top: 4px;">
+            <ui:Label text="GEOMETRY" style="
+                -unity-font-style: bold;
+                font-size: 10px;
+                margin-top: 2px;
+                margin-bottom: 3px;
+                color: rgb(100,160,255);
+                letter-spacing: 1px;
+            "/>
+
+            <ui:Button name="load-model-button" text="Import Geometry" style="
+                margin-top: 4px;
+                margin-bottom: 8px;
+                padding-top: 9px;
+                padding-bottom: 9px;
+                -unity-font-style: bold;
+                font-size: 11px;
+                background-color: rgba(80,140,255,0.25);
+                border-color: rgba(80,140,255,0.6);
+            "/>
+
+            <ui:Label text="MODEL PROPERTIES" style="
+                -unity-font-style: bold;
+                font-size: 10px;
+                margin-top: 8px;
+                margin-bottom: 3px;
+                color: rgb(100,160,255);
+                letter-spacing: 1px;
+            "/>
+
+            <ui:Slider name="vehicle-mass-slider" label="Mass (kg)" low-value="250" high-value="6000" value="1500" show-input-field="true" style="margin-bottom: 3px;"/>
+            <ui:Slider name="vehicle-wheelbase-slider" label="Wheelbase (m)" low-value="1.5" high-value="6.0" value="2.6" show-input-field="true" style="margin-bottom: 3px;"/>
+            <ui:Slider name="vehicle-cg-height-slider" label="CG Height (m)" low-value="0.15" high-value="1.5" value="0.35" show-input-field="true" style="margin-bottom: 3px;"/>
+            
+            <ui:FloatField name="vehicle-reference-area-field" label="Ref Area (m²)" value="0.0" style="margin-bottom: 3px;"/>
+            <ui:FloatField name="vehicle-track-width-field" label="Track Width (m)" value="0.0" style="margin-bottom: 3px;"/>
+            <ui:Slider name="model-scale-slider" label="Model Scale" low-value="0.10" high-value="4.00" value="1.00" show-input-field="true" style="margin-bottom: 3px;"/>
+            <ui:Slider name="model-offset-x-slider" label="Model Offset X (m)" low-value="-5.0" high-value="5.0" value="0.0" show-input-field="true" style="margin-bottom: 3px;"/>
+            <ui:Slider name="model-offset-y-slider" label="Model Offset Y (m)" low-value="-5.0" high-value="5.0" value="0.0" show-input-field="true" style="margin-bottom: 3px;"/>
+            <ui:Slider name="model-offset-z-slider" label="Model Offset Z (m)" low-value="-5.0" high-value="5.0" value="0.0" show-input-field="true" style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="vehicle-ride-height-slider" label="Ride Height (m)" low-value="0" high-value="0.5" value="0" show-input-field="true" style="margin-bottom: 3px;"/>
+            <ui:Slider name="vehicle-rake-slider" label="Rake Angle (°)" low-value="-8" high-value="8" value="0" show-input-field="true" style="margin-bottom: 3px;"/>
+
+            <ui:Button name="reset-sim-button" text="Recalculate Bounds &amp; Reset" style="
+                margin-top: 15px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                background-color: rgba(255,100,100,0.15);
+                border-color: rgba(255,100,100,0.4);
+                color: rgb(255,180,180);
+                font-size: 10px;
+            "/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

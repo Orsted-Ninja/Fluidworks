@@ -1,0 +1,132 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="boundary-conditions-view" style="flex-grow: 1;">
+        <ui:Label text="BOUNDARY CONDITIONS" style="
+            -unity-font-style: bold;
+            font-size: 10px;
+            margin-top: 6px;
+            margin-bottom: 3px;
+            color: rgb(100,160,255);
+            letter-spacing: 1px;
+        "/>
+
+        <ui:Label name="bc-status-label" text="Click Detect to find openings" style="
+            font-size: 10px;
+            color: rgba(255,255,255,0.5);
+            margin-bottom: 6px;
+        "/>
+
+        <ui:Button name="bc-detect-button" text="&#x1F50D; Detect Openings" style="
+            margin-bottom: 8px;
+            padding-top: 7px;
+            padding-bottom: 7px;
+            -unity-font-style: bold;
+            font-size: 11px;
+            background-color: rgba(80,140,255,0.2);
+            border-color: rgba(80,140,255,0.5);
+            border-top-width: 1px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            border-right-width: 1px;
+            border-radius: 4px;
+        "/>
+
+        <ui:Label text="ASSIGN BOUNDARIES" style="
+            -unity-font-style: bold;
+            font-size: 10px;
+            margin-top: 4px;
+            margin-bottom: 4px;
+            color: rgb(100,160,255);
+            letter-spacing: 1px;
+        "/>
+
+        <ui:Label name="bc-pick-status" text="" style="
+            font-size: 10px;
+            color: rgba(255,220,80,0.9);
+            margin-bottom: 4px;
+            display: none;
+        "/>
+
+        <ui:VisualElement style="flex-direction: row; margin-bottom: 6px;">
+            <ui:Button name="bc-assign-inlet-button" text="&#x2B55; Assign Inlet" style="
+                flex-grow: 1;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                margin-right: 3px;
+                -unity-font-style: bold;
+                font-size: 10px;
+                background-color: rgba(40,180,80,0.18);
+                border-color: rgba(40,180,80,0.5);
+                border-top-width: 1px;
+                border-bottom-width: 1px;
+                border-left-width: 1px;
+                border-right-width: 1px;
+                border-radius: 4px;
+            "/>
+            <ui:Button name="bc-assign-outlet-button" text="&#x2B55; Assign Outlet" style="
+                flex-grow: 1;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                margin-left: 3px;
+                -unity-font-style: bold;
+                font-size: 10px;
+                background-color: rgba(220,60,50,0.18);
+                border-color: rgba(220,60,50,0.5);
+                border-top-width: 1px;
+                border-bottom-width: 1px;
+                border-left-width: 1px;
+                border-right-width: 1px;
+                border-radius: 4px;
+            "/>
+        </ui:VisualElement>
+
+        <ui:Button name="bc-cancel-pick-button" text="Cancel Selection" style="
+            margin-bottom: 8px;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            font-size: 10px;
+            background-color: rgba(255,255,255,0.06);
+            border-color: rgba(255,255,255,0.15);
+            border-top-width: 1px;
+            border-bottom-width: 1px;
+            border-left-width: 1px;
+            border-right-width: 1px;
+            border-radius: 4px;
+            display: none;
+        "/>
+
+        <ui:Label text="DETECTED OPENINGS" style="
+            -unity-font-style: bold;
+            font-size: 10px;
+            margin-top: 4px;
+            margin-bottom: 3px;
+            color: rgb(100,160,255);
+            letter-spacing: 1px;
+        "/>
+
+        <ui:ScrollView name="bc-openings-list" style="
+            flex-grow: 1;
+            max-height: 300px;
+            margin-bottom: 6px;
+        "/>
+
+        <ui:VisualElement name="bc-summary-panel" style="
+            background-color: rgba(0,0,0,0.25);
+            border-radius: 4px;
+            padding: 6px 8px;
+            margin-bottom: 4px;
+        ">
+            <ui:VisualElement style="flex-direction: row; margin-bottom: 2px;">
+                <ui:Label text="Openings" style="flex-grow: 1; font-size: 10px; color: rgba(255,255,255,0.6);"/>
+                <ui:Label name="bc-total-count" text="0" style="font-size: 10px; color: rgba(255,255,255,0.8); -unity-font-style: bold;"/>
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-direction: row; margin-bottom: 2px;">
+                <ui:Label text="Inlets" style="flex-grow: 1; font-size: 10px; color: rgba(255,255,255,0.6);"/>
+                <ui:Label name="bc-inlet-count" text="0" style="font-size: 10px; color: rgb(60,200,90); -unity-font-style: bold;"/>
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-direction: row;">
+                <ui:Label text="Outlets" style="flex-grow: 1; font-size: 10px; color: rgba(255,255,255,0.6);"/>
+                <ui:Label name="bc-outlet-count" text="0" style="font-size: 10px; color: rgb(240,80,70); -unity-font-style: bold;"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

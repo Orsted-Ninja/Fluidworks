@@ -1,0 +1,328 @@
+% "%" is used for commenting
+%  Latex report preparation template.
+% Syntax is explained through out the document.
+% Enjoy the world of LaTex!!!!!!!
+
+
+
+
+% To Specify the document is a report, font size 12pt & a4 page format
+\documentclass[12pt,a4paper,titlepage]{report}
+
+% Include packages needed for pictures, fonts, maths etc.....
+\usepackage[titletoc]{appendix} % to include appendix in table of contents
+\usepackage[nottoc]{tocbibind}  % to include bibliography in table of contents  
+\usepackage{fancyhdr} % to include header & footer
+\usepackage{graphicx}
+\usepackage[left=3.5cm, right=2.5cm, top=3.0cm, bottom=2.5cm]{geometry}
+\usepackage{latexsym}		% to get LASY symbols
+\usepackage{epsfig}		% to insert PostScript figures
+\usepackage{rotating}		% for sideways tables/figures
+\usepackage{eufrak}
+\usepackage{type1cm}
+\usepackage{newsec}
+\usepackage{titlesec}
+\usepackage{float}
+\usepackage{listings} % Required for insertion of code
+\usepackage[usenames,dvipsnames]{color} % Required for custom colors
+\usepackage{courier} % Required for the courier font
+\usepackage{dashrule}
+\usepackage[none]{hyphenat}
+
+% To Specify the characteristics of chapter heading.
+\titleformat{\chapter}[display]
+{\normalfont\Large\bfseries\centering}{\chaptertitlename\
+\thechapter}{25pt}{\Large}
+
+
+% Here we begin the report after the specifications............
+\begin{document}
+
+
+% --------------Title Page---------------------------%
+\titlepage
+\thispagestyle{empty}
+\begin{center}
+\Large \textbf{Project Title (in Capital letters)}\\[2cm]
+\large \textit{The Mini Project report submitted in partial fulfillment of the
+requirements for the award of the degree of}\\[1cm]
+{\huge {$\mathfrak {Bachelor\; of\; Technology}$}}\\[.5cm]
+\textit{in}\\[.5cm]
+{\Large \bf \itshape{{Artificial Intelligence \& Machine Learning}}}\\[1cm]
+\large \textit{by}
+\vskip1.0cm
+\large{A.B. Alpha} (\small{Reg. No. MCE23AIM0001})\\
+\large{Name of the Student} (\small{Reg. No. MCE23AIM0002})\\
+\large \textbf{Name of the Student} (\small \textbf{Reg. No. MCE23AIM0004})\\     % Highlight self name only in the individual copy.
+\large{C.D. Delta} (\small{Reg. No. MCE23AIM0003})\\
+\vskip1.0cm
+\includegraphics[height=5cm]{college_logo-removebg.png}\\
+\vspace{1cm}
+\large \bfseries{Marian Engineering College}\\
+\large \bfseries{Trivandrum}\\
+\large \bfseries{Kerala}\\
+\vspace{2cm}
+\large \bfseries{April 2026}\\
+
+\end{center}
+% --------------Title Page---------------------------%
+
+
+% --------------Certificate page----------------------%
+\clearpage
+\newlength{\toptafiddle} 
+\newlength{\bottafiddle}
+\setlength{\toptafiddle}{1in}
+\setlength{\bottafiddle}{1in}
+\vspace*{-0.5in}
+\enlargethispage{\bottafiddle}
+\thispagestyle{empty}
+
+\begin{center} \Large \bfseries{DEPARTMENT OF ARTIFICIAL INTELLIGENCE \& MACHINE LEARNING}\\
+\large\bfseries{Marian Engineering College}\\
+\large \bfseries{Kazhakuttom, Trivandrum - 695582}\\
+\vspace{1.0cm}
+\includegraphics[height=6.0cm]{college_logo-removebg.png}\\
+\vspace{1.5cm}
+\textbf{CERTIFICATE}\end{center}
+\vspace{1.5cm}
+This is to certify that the report entitled \textbf{''Name Of The Project''} is a bonafide record
+of the Mini Project presented by Name 1 (Reg. No. MCE23AIM001), Name 2 (Reg. No. MCE23AIM001), 
+ \textbf{Name 3 (Reg. No. MCE23AIM001)} and  Name 4 (Reg. No. MCE23AIM001) under our
+supervision and guidance. The report has been submitted to the Department of Artificial Intelligence \& Machine Learning of Marian Engineering College, Kazhakuttom, Trivandrum in partial fulfillment of the award of the Degree of Bachelor of Technology in Artificial Intelligence \& Machine Learning, during the year 2025-2026.\\[.5cm]
+\begin{center}
+\line(1,0){435}
+\end{center}
+\vspace{1cm}
+\begin{minipage}{.7\textwidth}
+\begin{flushleft} 
+\textbf{Mr. ABC}\\
+\itshape{Supervising Guide}\\
+\itshape{Assistant Professor}\\
+\itshape{Artificial Intelligence \& \\ Machine Learning}\\
+\itshape{Marian Engineering College \\ Trivandrum}\\
+\end{flushleft}
+\end{minipage}
+\begin{minipage}{1\textwidth}
+\begin{flushright} 
+\vfill
+\begin{flushleft}
+\textbf{Prof. Balu John}\\
+\itshape{ Head of the Department}\\
+\itshape{Artificial Intelligence \& \\ Machine Learning}\\
+\itshape{Marian Engineering College \\ Trivandrum}\\
+
+\end{flushleft}
+\end{flushright}
+\end{minipage}
+
+
+
+% --------------Certificate page----------------------%
+
+
+
+%------------------Ack page ---------------------------%
+\clearpage
+\normalsize{}
+\thispagestyle{empty}
+\renewcommand\abstractname{ACKNOWLEDGEMENT}
+\begin{abstract}
+\vspace{1.5cm}
+We are extremely thankful to our Principal \textbf{Dr.Abdul Nizar M. } 
+for giving us his consent for this project. We are thankful to 
+\textbf{Prof. Balu John}, Head of the Department, Artificial Intelligence \& Machine Learning, for his valuable suggestions and
+support. We are indebted to our project Coordinators \textbf{Dr. Aswathy S. U}, \textbf{Ms. Aswathy T .K.}, \textbf{Ms. Jyotsna A} and our guide \textbf{Mr. ABC},
+Asst. Professor, Dept. of Artificial Intelligence \& Machine Learning  for their constant help and support throughout the presentation of the project by providing timely advices and guidance. We thank God almighty for all
+the blessing received during this endeavor. Last, but not least we thank all our
+friends for the support and encouragement they have given us during the course of our work.
+
+\end{abstract}
+
+
+\newpage
+\renewcommand\abstractname {ABSTRACT}
+\begin{abstract}
+\vspace{1.5cm}
+
+Abstract should be a single paragraph not exceeding 150 words.
+
+\end{abstract}
+% ----------------Abstrat page-----------------------%
+
+
+%------------------Ack page ---------------------------%
+
+% Table of contents page.... Automatically generated.............
+\newpage
+\pagenumbering{roman}
+\normalsize \tableofcontents
+
+% List of figures page.............. Automatically generated...................
+\newpage
+\normalsize \listoffigures
+
+% List of tables page.............. Automatically generated...................
+\newpage
+\normalsize \listoftables
+
+
+
+% ------------------Chapters -----------------------------%
+\newpage
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% ------------- Defining header & footer section ------------%
+\pagestyle{fancy}
+\fancyhead{}
+\fancyfoot{}
+\fancyhead[R]{\textit{Project Title}}
+\fancyfoot[L]{\textit{Dept. of AI \& ML}}
+\fancyfoot[R] {\textit{Marian Engineering College}}
+\fancyfoot[C] {\thepage}
+\renewcommand{\headrulewidth}{0.4pt}
+\renewcommand{\footrulewidth}{0.4pt}
+% ------------- Defining header & footer section ------------%
+
+
+
+\chapter{Introduction}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacus orci, placerat non facilisis sed, ultrices a nunc. Maecenas metus dolor, volutpat at aliquam vel, tempor a ipsum. Donec semper mattis mollis. Integer nunc turpis, interdum vitae vehicula eget, porta nec augue. Curabitur ut placerat erat. Nunc tincidunt, lacus eu sagittis pellentesque, tortor tortor cursus orci, vel aliquam eros mi et purus. Aliquam erat volutpat. Nulla malesuada nulla suscipit magna luctus at pharetra nulla venenatis. Cras eleifend pharetra neque, id rhoncus diam lacinia non. Aliquam sagittis lorem sit amet arcu porttitor ut elementum tellus dignissim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam augue enim, egestas eget ullamcorper nec, suscipit nec lacus. Fusce vitae interdum sem. Ut mauris sem, vehicula sit amet hendrerit ac, mattis suscipit risus. Fusce eget mauris quam, a sollicitudin lectus.
+Vivamus scelerisque ultricies sem, non cursus nunc tincidunt sit amet. Morbi dictum fringilla leo et ullamcorper. Sed quis enim eget quam sagittis molestie nec id nunc. Sed nec purus mauris. Nam id ligula mi. Curabitur sapien velit, euismod sed faucibus sed, rhoncus nec tellus. Duis egestas, purus eget facilisis sagittis, lorem nunc pellentesque elit, in tristique lorem nisl nec risus. Duis adipiscing, turpis nec pharetra porttitor, tellus lectus pellentesque est, et rhoncus dui nisl et urna. Etiam tortor felis, suscipit condimentum facilisis sed, vestibulum non lectus. Suspendisse rhoncus, dolor vitae tincidunt tempus, leo tellus dapibus nisi, vitae feugiat quam risus a nibh. Proin convallis facilisis ultricies. Aliquam varius adipiscing quam, sed rhoncus nibh porttitor non. Pellentesque fermentum varius neque, at egestas neque gravida sed.
+
+\section{Introduction}
+Vivamus scelerisque ultricies sem, non cursus nunc tincidunt sit amet. Morbi dictum fringilla leo et ullamcorper. Sed quis enim eget quam sagittis molestie nec id nunc. Sed nec purus mauris. Nam id ligula mi. Curabitur sapien velit, euismod sed faucibus sed, rhoncus nec tellus. Duis egestas, purus eget facilisis sagittis, lorem nunc pellentesque elit, in tristique lorem nisl nec risus. Duis adipiscing, turpis nec pharetra porttitor, tellus lectus pellentesque est, et rhoncus dui nisl et urna. Etiam tortor felis, suscipit condimentum facilisis sed, vestibulum non lectus. Suspendisse rhoncus, dolor vitae tincidunt tempus, leo tellus dapibus nisi, vitae feugiat quam risus a nibh. Proin convallis facilisis ultricies. Aliquam varius adipiscing quam, sed rhoncus nibh porttitor non. Pellentesque fermentum varius neque, at egestas neque gravida sed.
+
+\section{Motivation}
+Vivamus scelerisque ultricies sem, non cursus nunc tincidunt sit amet. Morbi dictum fringilla leo et ullamcorper. Sed quis enim eget quam sagittis molestie nec id nunc. Sed nec purus mauris. Nam id ligula mi. Curabitur sapien velit, euismod sed faucibus sed, rhoncus nec tellus. Duis egestas, purus eget facilisis sagittis, lorem nunc pellentesque elit, in tristique lorem nisl nec risus. Duis adipiscing, turpis nec pharetra porttitor, tellus lectus pellentesque est, et rhoncus dui nisl et urna. Etiam tortor felis, suscipit condimentum facilisis sed, vestibulum non lectus. Suspendisse rhoncus, dolor vitae tincidunt tempus, leo tellus dapibus nisi, vitae feugiat quam risus a nibh. Proin convallis facilisis ultricies. Aliquam varius adipiscing quam, sed rhoncus nibh porttitor non. Pellentesque fermentum varius neque, at egestas neque gravida sed.
+
+\section{Problem Definition}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacus orci, placerat non facilisis sed, ultrices a nunc. Maecenas metus dolor, volutpat at aliquam vel, tempor a ipsum. Donec semper mattis mollis. Integer nunc turpis, interdum vitae vehicula eget, porta nec augue. Curabitur ut placerat erat. Nunc tincidunt, lacus eu sagittis pellentesque, tortor tortor cursus orci, vel aliquam eros mi et purus. Aliquam erat volutpat. Nulla malesuada nulla suscipit magna luctus at pharetra nulla venenatis. Cras eleifend pharetra neque, id rhoncus diam lacinia non. Aliquam sagittis lorem sit amet arcu porttitor ut elementum tellus dignissim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam augue enim, egestas eget ullamcorper nec, suscipit nec lacus. Fusce vitae interdum sem. Ut mauris sem, vehicula sit amet hendrerit ac, mattis suscipit risus. Fusce eget mauris quam, a sollicitudin lectus.
+Vivamus scelerisque ultricies sem, non cursus nunc tincidunt sit amet. Morbi dictum fringilla leo et ullamcorper. Sed quis enim eget quam sagittis molestie nec id nunc. Sed nec purus mauris. Nam id ligula mi. Curabitur sapien velit, euismod sed faucibus sed, rhoncus nec tellus. Duis egestas, purus eget facilisis sagittis, lorem nunc pellentesque elit, in tristique lorem nisl nec risus. Duis adipiscing, turpis nec pharetra porttitor, tellus lectus pellentesque est, et rhoncus dui nisl et urna. Etiam tortor felis, suscipit condimentum facilisis sed, vestibulum non lectus. Suspendisse rhoncus, dolor vitae tincidunt tempus, leo tellus dapibus nisi, vitae feugiat quam risus a nibh. Proin convallis facilisis ultricies. Aliquam varius adipiscing quam, sed rhoncus nibh porttitor non. Pellentesque fermentum varius neque, at egestas neque gravida sed.
+
+\section{Objectives}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacus orci, placerat non facilisis sed, ultrices a nunc. Maecenas metus dolor, volutpat at aliquam vel, tempor a ipsum. Donec semper mattis mollis. Integer nunc turpis, interdum vitae vehicula eget, porta nec augue. Curabitur ut placerat erat. Nunc tincidunt, lacus eu sagittis pellentesque, tortor tortor cursus orci, vel aliquam eros mi et purus. Aliquam erat volutpat. Nulla malesuada nulla suscipit magna luctus at pharetra nulla venenatis. Cras eleifend pharetra neque, id rhoncus diam lacinia non. Aliquam sagittis lorem sit amet arcu porttitor ut elementum tellus dignissim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam augue enim, egestas eget ullamcorper nec, suscipit nec lacus. Fusce vitae interdum sem. Ut mauris sem, vehicula sit amet hendrerit ac, mattis suscipit risus. Fusce eget mauris quam, a sollicitudin lectus.
+Vivamus scelerisque ultricies sem, non cursus nunc tincidunt sit amet. Morbi dictum fringilla leo et ullamcorper. Sed quis enim eget quam sagittis molestie nec id nunc. Sed nec purus mauris. Nam id ligula mi. Curabitur sapien velit, euismod sed faucibus sed, rhoncus nec tellus. Duis egestas, purus eget facilisis sagittis, lorem nunc pellentesque elit, in tristique lorem nisl nec risus. Duis adipiscing, turpis nec pharetra porttitor, tellus lectus pellentesque est, et rhoncus dui nisl et urna. Etiam tortor felis, suscipit condimentum facilisis sed, vestibulum non lectus. Suspendisse rhoncus, dolor vitae tincidunt tempus, leo tellus dapibus nisi, vitae feugiat quam risus a nibh. Proin convallis facilisis ultricies. Aliquam varius adipiscing quam, sed rhoncus nibh porttitor non. Pellentesque fermentum varius neque, at egestas neque gravida sed.
+
+\section{Scope of the project}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacus orci, placerat non facilisis sed, ultrices a nunc. Maecenas metus dolor, volutpat at aliquam vel, tempor a ipsum. Donec semper mattis mollis. Integer nunc turpis, interdum vitae vehicula eget, porta nec augue. Curabitur ut placerat erat. Nunc tincidunt, lacus eu sagittis pellentesque, tortor tortor cursus orci, vel aliquam eros mi et purus. Aliquam erat volutpat. Nulla malesuada nulla suscipit magna luctus at pharetra nulla venenatis. Cras eleifend pharetra neque, id rhoncus diam lacinia non. Aliquam sagittis lorem sit amet arcu porttitor ut elementum tellus dignissim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam augue enim, egestas eget ullamcorper nec, suscipit nec lacus. Fusce vitae interdum sem. Ut mauris sem, vehicula sit amet hendrerit ac, mattis suscipit risus. Fusce eget mauris quam, a sollicitudin lectus.
+Vivamus scelerisque ultricies sem, non cursus nunc tincidunt sit amet. Morbi dictum fringilla leo et ullamcorper. Sed quis enim eget quam sagittis molestie nec id nunc. Sed nec purus mauris. Nam id ligula mi. Curabitur sapien velit, euismod sed faucibus sed, rhoncus nec tellus. Duis egestas, purus eget facilisis sagittis, lorem nunc pellentesque elit, in tristique lorem nisl nec risus. Duis adipiscing, turpis nec pharetra porttitor, tellus lectus pellentesque est, et rhoncus dui nisl et urna. Etiam tortor felis, suscipit condimentum facilisis sed, vestibulum non lectus. Suspendisse rhoncus, dolor vitae tincidunt tempus, leo tellus dapibus nisi, vitae feugiat quam risus a nibh. Proin convallis facilisis ultricies. Aliquam varius adipiscing quam, sed rhoncus nibh porttitor non. Pellentesque fermentum varius neque, at egestas neque gravida sed.
+
+\section{Chapter Details}
+The report is organised as follows: In order to fully understand the background of keyphrase extraction, chapter two presents the related works which includes a literature review of the extraction mechanisms so far developed. Chapter three gives an overview of neural network and backpropagation learning method. From chapter four onwards, different stages of the proposed keyphrase extraction method are described with suitable block diagrams and algorithm. Chapter four has the document preprocessing, chapter five, the candidate phrase identification and chapter six, the different features used for describing phrases. Chapter seven clearly describes how training and testing is being done in the neural network. Chapter eight gives the testing strategies and results obtained and chapter nine the summary of obtained results. The last chapter, ten, give the conclusion and futureworks.
+
+%%%% New Chapter........................
+\chapter{Literature Survey}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacus orci, placerat non facilisis sed, ultrices a nunc. Maecenas metus dolor, volutpat at aliquam vel, tempor a ipsum. Donec semper mattis mollis. Integer nunc turpis, interdum vitae vehicula eget, porta nec augue. Curabitur ut placerat erat. Nunc tincidunt, lacus eu sagittis pellentesque, tortor tortor cursus orci, vel aliquam eros mi et purus. Aliquam erat volutpat. Nulla malesuada nulla suscipit magna luctus at pharetra nulla venenatis. Cras eleifend pharetra neque, id rhoncus diam lacinia non. Aliquam sagittis lorem sit amet arcu porttitor ut elementum tellus dignissim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam augue enim, egestas eget ullamcorper nec, suscipit nec lacus. Fusce vitae interdum sem. Ut mauris sem, vehicula sit amet hendrerit ac, mattis suscipit risus. Fusce eget mauris quam, a sollicitudin lectus.
+\section{Paper 1}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacus orci, placerat non facilisis sed, ultrices a nunc. Maecenas metus dolor, volutpat at aliquam vel, tempor a ipsum. Donec semper mattis mollis. Integer nunc turpis, interdum vitae vehicula eget, porta nec augue. Curabitur ut placerat erat. Nunc tincidunt, lacus eu sagittis pellentesque, tortor tortor cursus orci, vel aliquam eros mi et purus. Aliquam erat volutpat. Nulla malesuada nulla suscipit magna luctus at pharetra nulla venenatis. Cras eleifend pharetra neque, id rhoncus diam lacinia non. Aliquam sagittis lorem sit amet arcu porttitor ut elementum tellus dignissim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam augue enim, egestas eget ullamcorper nec, suscipit nec lacus. Fusce vitae interdum sem. Ut mauris sem, vehicula sit amet hendrerit ac, mattis suscipit risus. Fusce eget mauris quam, a sollicitudin lectus.
+\section{Paper 2}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacus orci, placerat non facilisis sed, ultrices a nunc. Maecenas metus dolor, volutpat at aliquam vel, tempor a ipsum. Donec semper mattis mollis. Integer nunc turpis, interdum vitae vehicula eget, porta nec augue. Curabitur ut placerat erat. Nunc tincidunt, lacus eu sagittis pellentesque, tortor tortor cursus orci, vel aliquam eros mi et purus. Aliquam erat volutpat. Nulla malesuada nulla suscipit magna luctus at pharetra nulla venenatis. Cras eleifend pharetra neque, id rhoncus diam lacinia non. Aliquam sagittis lorem sit amet arcu porttitor ut elementum tellus dignissim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam augue enim, egestas eget ullamcorper nec, suscipit nec lacus. Fusce vitae interdum sem. Ut mauris sem, vehicula sit amet hendrerit ac, mattis suscipit risus. Fusce eget mauris quam, a sollicitudin lectus.
+\section{Paper 3}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacus orci, placerat non facilisis sed, ultrices a nunc. Maecenas metus dolor, volutpat at aliquam vel, tempor a ipsum. Donec semper mattis mollis. Integer nunc turpis, interdum vitae vehicula eget, porta nec augue. Curabitur ut placerat erat. Nunc tincidunt, lacus eu sagittis pellentesque, tortor tortor cursus orci, vel aliquam eros mi et purus. Aliquam erat volutpat. Nulla malesuada nulla suscipit magna luctus at pharetra nulla venenatis. Cras eleifend pharetra neque, id rhoncus diam lacinia non. Aliquam sagittis lorem sit amet arcu porttitor ut elementum tellus dignissim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam augue enim, egestas eget ullamcorper nec, suscipit nec lacus. Fusce vitae interdum sem. Ut mauris sem, vehicula sit amet hendrerit ac, mattis suscipit risus. Fusce eget mauris quam, a sollicitudin lectus.
+\section{Paper 4}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacus orci, placerat non facilisis sed, ultrices a nunc. Maecenas metus dolor, volutpat at aliquam vel, tempor a ipsum. Donec semper mattis mollis. Integer nunc turpis, interdum vitae vehicula eget, porta nec augue. Curabitur ut placerat erat. Nunc tincidunt, lacus eu sagittis pellentesque, tortor tortor cursus orci, vel aliquam eros mi et purus. Aliquam erat volutpat. Nulla malesuada nulla suscipit magna luctus at pharetra nulla venenatis. Cras eleifend pharetra neque, id rhoncus diam lacinia non. Aliquam sagittis lorem sit amet arcu porttitor ut elementum tellus dignissim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam augue enim, egestas eget ullamcorper nec, suscipit nec lacus. Fusce vitae interdum sem. Ut mauris sem, vehicula sit amet hendrerit ac, mattis suscipit risus. Fusce eget mauris quam, a sollicitudin lectus.
+
+\section{Paper 5}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacus orci, placerat non facilisis sed, ultrices a nunc. Maecenas metus dolor, volutpat at aliquam vel, tempor a ipsum. Donec semper mattis mollis. Integer nunc turpis, interdum vitae vehicula eget, porta nec augue. Curabitur ut placerat erat. Nunc tincidunt, lacus eu sagittis pellentesque, tortor tortor cursus orci, vel aliquam eros mi et purus. Aliquam erat volutpat. Nulla malesuada nulla suscipit magna luctus at pharetra nulla venenatis. Cras eleifend pharetra neque, id rhoncus diam lacinia non. Aliquam sagittis lorem sit amet arcu porttitor ut elementum tellus dignissim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam augue enim, egestas eget ullamcorper nec, suscipit nec lacus. Fusce vitae interdum sem. Ut mauris sem, vehicula sit amet hendrerit ac, mattis suscipit risus. Fusce eget mauris quam, a sollicitudin lectus.
+
+%%%% New Chapter........................
+\chapter{Proposed System}
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nulla lacus orci, placerat non facilisis sed, ultrices a nunc. Maecenas metus dolor, volutpat at aliquam vel, tempor a ipsum. Donec semper mattis mollis. Integer nunc turpis, interdum vitae vehicula eget, porta nec augue. Curabitur ut placerat erat. Nunc tincidunt, lacus eu sagittis pellentesque, tortor tortor cursus orci, vel aliquam eros mi et purus. Aliquam erat volutpat. Nulla malesuada nulla suscipit magna luctus at pharetra nulla venenatis. Cras eleifend pharetra neque, id rhoncus diam lacinia non. Aliquam sagittis lorem sit amet arcu porttitor ut elementum tellus dignissim. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Nam augue enim, egestas eget ullamcorper nec, suscipit nec lacus. Fusce vitae interdum sem. Ut mauris sem, vehicula sit amet hendrerit ac, mattis suscipit risus. Fusce eget mauris quam, a sollicitudin lectus.
+
+\section{Methodology}
+Vivamus scelerisque ultricies sem, non cursus nunc tincidunt sit amet. Morbi dictum fringilla leo et ullamcorper. Sed quis enim eget quam sagittis molestie nec id nunc. Sed nec purus mauris. Nam id ligula mi. Curabitur sapien velit, euismod sed faucibus sed, rhoncus nec tellus. Duis egestas, purus eget facilisis sagittis, lorem nunc pellentesque elit, in tristique lorem nisl nec risus. Duis adipiscing, turpis nec pharetra porttitor, tellus lectus pellentesque est, et rhoncus dui nisl et urna. Etiam tortor felis, suscipit condimentum facilisis sed, vestibulum non lectus. Suspendisse rhoncus, dolor vitae tincidunt tempus, leo tellus dapibus nisi, vitae feugiat quam risus a nibh. Proin convallis facilisis ultricies. Aliquam varius adipiscing quam, sed rhoncus nibh porttitor non. Pellentesque fermentum varius neque, at egestas neque gravida sed.
+
+\subsection{System Architecture Diagram and description }
+Vivamus scelerisque ultricies sem, non cursus nunc tincidunt sit amet. Morbi dictum fringilla leo et ullamcorper. Sed quis enim eget quam sagittis molestie nec id nunc. Sed nec purus mauris. Nam id ligula mi. Curabitur sapien velit, euismod sed faucibus sed, rhoncus nec tellus. Duis egestas, purus eget facilisis sagittis, lorem nunc pellentesque elit, in tristique lorem nisl nec risus. Duis adipiscing, turpis nec pharetra porttitor, tellus lectus pellentesque est, et rhoncus dui nisl et urna. Etiam tortor felis, suscipit condimentum facilisis sed, vestibulum non lectus. Suspendisse rhoncus, dolor vitae tincidunt tempus, leo tellus dapibus nisi, vitae feugiat quam risus a nibh. Proin convallis facilisis ultricies. Aliquam varius adipiscing quam, sed rhoncus nibh porttitor non. Pellentesque fermentum varius neque, at egestas neque gravida sed.
+
+\begin{figure}[h]
+\begin{center}
+\includegraphics[scale=.7]{graph1.png}     % u can enlarge or reduce scale sizes, according to ur needs.
+\caption[Probability and information content as the membership of string is revealed.]   % This will come in list of figures.
+{DB contains 10\% of all possible L-length strings (formulas)} 
+\end{center}
+\end{figure}
+
+\section{Module Description}
+Vivamus scelerisque ultricies sem, non cursus nunc tincidunt sit amet. Morbi dictum fringilla leo et ullamcorper. Sed quis enim eget quam sagittis molestie nec id nunc. Sed nec purus mauris. Nam id ligula mi. Curabitur sapien velit, euismod sed faucibus sed, rhoncus nec tellus. Duis egestas, purus eget facilisis sagittis, lorem nunc pellentesque elit, in tristique lorem nisl nec risus. Duis adipiscing, turpis nec pharetra porttitor, tellus lectus pellentesque est, et rhoncus dui nisl et urna. Etiam tortor felis, suscipit condimentum facilisis sed, vestibulum non lectus. Suspendisse rhoncus, dolor vitae tincidunt tempus, leo tellus dapibus nisi, vitae feugiat quam risus a nibh. Proin convallis facilisis ultricies. Aliquam varius adipiscing quam, sed rhoncus nibh porttitor non. Pellentesque fermentum varius neque, at egestas neque gravida sed.
+
+\section{Data Flow Diagrams}
+Vivamus scelerisque ultricies sem, non cursus nunc tincidunt sit amet. Morbi dictum fringilla leo et ullamcorper. Sed quis enim eget quam sagittis molestie nec id nunc. Sed nec purus mauris. Nam id ligula mi. Curabitur sapien velit, euismod sed faucibus sed, rhoncus nec tellus. Duis egestas, purus eget facilisis sagittis, lorem nunc pellentesque elit, in tristique lorem nisl nec risus. Duis adipiscing, turpis nec pharetra porttitor, tellus lectus pellentesque est, et rhoncus dui nisl et urna. Etiam tortor felis, suscipit condimentum facilisis sed, vestibulum non lectus. Suspendisse rhoncus, dolor vitae tincidunt tempus, leo tellus dapibus nisi, vitae feugiat quam risus a nibh. Proin convallis facilisis ultricies. Aliquam varius adipiscing quam, sed rhoncus nibh porttitor non. Pellentesque fermentum varius neque, at egestas neque gravida sed.
+
+
+\chapter{Tools \& Technologies Used}
+Vivamus scelerisque ultricies sem, non cursus nunc tincidunt sit amet. Morbi dictum fringilla leo et ullamcorper. Sed quis enim eget quam sagittis molestie nec id nunc. Sed nec purus mauris. Nam id ligula mi. Curabitur sapien velit, euismod sed faucibus sed, rhoncus nec tellus. Duis egestas, purus eget facilisis sagittis, lorem nunc pellentesque elit, in tristique lorem nisl nec risus. Duis adipiscing, turpis nec pharetra porttitor, tellus lectus pellentesque est, et rhoncus dui nisl et urna. Etiam tortor felis, suscipit condimentum facilisis sed, vestibulum non lectus. Suspendisse rhoncus, dolor vitae tincidunt tempus, leo tellus dapibus nisi, vitae feugiat quam risus a nibh. Proin convallis facilisis ultricies. Aliquam varius adipiscing quam, sed rhoncus nibh porttitor non. Pellentesque fermentum varius neque, at egestas neque gravida sed.
+%%%% New Chapter........................
+\chapter{Testing Strategies \& Result Achieved}
+\section{Results}
+ADD ALL THE RELEVANT SCREENSHOTS AND RESULTS OF YOUR PROJECT HERE AS A SECTION.
+\section{Summary of Results}
+
+%%%% New Chapter........................
+
+\chapter{Conclusion \& Future Work}
+
+The proposed method for keyphrase extraction was described and implemented. The method uses neural network for training and classification. Candidate phrases are giving weights depending on their features and these are given to the network for training and testing. An algorithm is designed for selecting the K top ranked phrases as keyphrases. Authors are giving the right to determine the number of keyphrases, say K. The work is extentable and modifiable. As I mentioned in the abstract, it is possible to include or exclude the features, which determine the results. We can include other structural features of the phrases for producing more accurate results like (1) Appears in the title or headings (2) Distribution in the paragraphs of a given document (3) First occurance (4) Format of the word(Italic,underlined,bold etc.) (5) Contain special characters (6) Wikipedia References etc. This inclusions may require the input documents as PDF or in word format. Planning to give more emphasis on POS taggers, which can refine the result more. The framework need to be extended to other domains also.
+% ------------------Chapters -----------------------------%
+
+
+
+
+% -----------------------Bibliography----------------------%
+
+%%% List in alphabetic order
+\begin{thebibliography}{9}
+
+\bibitem{ev08}F.Esponda,\emph{''Everything that is not important: negative databases''},IEEE Computational Intelligence may 2008.
+
+\bibitem{on05}F.Esponda,E.S.Ackley,S.Forrest,P.Helman,\emph{''Online negative databases''},International Journal of Unconventional Computing,vol 1 no:3,pp 403-416,2005.
+
+\bibitem{pro07}F.Esponda, E.S.Ackley, S.Forrest, H.Jia, P.Helman,\emph{''Protecting Data 	privacy through Hard to reverse negative databases''}, 	International Journal of Information and Security, vol 6, pp 403-416, 	Oct 07.
+
+\bibitem{enhan04}F.Esponda, Stephanie Forrest and Paul Helman,\emph{'' Enhancing 	Privacy through Negative Representations of Data''}, UNM 	Computer Science Technical Report TR-CS-2004-18, March 2004.
+
+\bibitem{neg04}F.Esponda, S. Forrest, and P. Helman,\emph{''Negative representations of information''},
+Submitted to International Journal of Information Security, 2004.
+
+\bibitem{rel07}F. Esponda, E.D. Trias, E.S. Ackley, and S. Forrest,\emph{''A Relational Algebra for Negative Databases''},UNM Computer Science Technical Report TR-CS-2007-18, November 2007.
+
+\bibitem{gen05}H. Jia, C. Moore, and D. Strain,\emph{''Generating hard satisfiable formulas by hiding
+solutions deceptively''}, In AAAI, 2005.
+
+\bibitem{site}http://www.cs.unm.edu/~forrest/projects/ndb/index.html visited on April 22, 2017
+
+\end{thebibliography}
+% -----------------------Bibliography----------------------%
+
+%%%%%%%%%%  To cite a reference paper in the chapters like "Refer [1]" You should follow this syntax in the chapters.
+% ....for explanation kindly refer ~\cite{ev08}
+		% Output will be .... for explanation kindly refer [1]	
+% ev08 is just a name i have given to reference 1.
+%%%%%%%%%%%%%%%%%%%%
+
+
+
+% -----------------------Appendix chapters-------------------%
+\begin{appendices}
+
+%%%% New Appendix Chapter........................
+\chapter{Sample Code}
+\section{\normalsize Sample code for functionality A}
+%%% If you want to insert a code, put that code file inside the current directory.. here it is homework_example.pl
+ \lstset{ tabsize=1,language=Python}
+  \lstinputlisting{homework_example.pl}
+
+\section{\normalsize  Sample code for functionality B}
+%%% If you want to insert a code, put that code file inside the current directory.. here it is philo.c
+  \lstset{ tabsize=1,language=C,caption={Code for finding out the errors}}
+  \lstinputlisting{philo.c}
+
+
+\end{appendices}
+% -----------------------Appendix chapters-------------------%
+
+
+\end{document}
+%%%%%%%%%%% Document Ends here...!!!!!!!!!!!!!!!!!

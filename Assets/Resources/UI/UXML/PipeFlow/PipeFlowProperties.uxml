@@ -1,0 +1,263 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="pipe-flow-properties-view" style="flex-grow: 1;">
+        <ui:VisualElement name="pipe-tab-bar" style="
+            flex-direction: row;
+            margin-bottom: 8px;
+            border-bottom-width: 1px;
+            border-bottom-color: rgba(255,255,255,0.12);
+        ">
+            <ui:Button name="pipe-tab-btn-settings" text="Pipe Flow" style="
+                flex-grow: 1;
+                -unity-font-style: bold;
+                font-size: 11px;
+                padding-top: 6px;
+                padding-bottom: 6px;
+                background-color: rgba(80,140,255,0.18);
+                border-bottom-width: 2px;
+                border-bottom-color: rgb(80,140,255);
+            "/>
+            <ui:Button name="pipe-tab-btn-model" text="Model" style="
+                flex-grow: 1;
+                font-size: 11px;
+                padding-top: 6px;
+                padding-bottom: 6px;
+                background-color: rgba(0,0,0,0);
+            "/>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="pipe-tab-settings">
+            <ui:Label text="PIPE FLOW SETTINGS" style="
+                -unity-font-style: bold;
+                font-size: 10px;
+                margin-top: 6px;
+                margin-bottom: 3px;
+                color: rgb(100,160,255);
+                letter-spacing: 1px;
+            "/>
+
+            <ui:Slider name="pipe-inlet-velocity-slider"
+                       label="Inlet Velocity (m/s)"
+                       low-value="0.1" high-value="50" value="10" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:DropdownField name="pipe-visualization-dropdown"
+                              label="Visualization"
+                              choices="Surface Pressure,Surface Friction"
+                              value="Surface Pressure"
+                              style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="pipe-radius-slider"
+                       label="Pipe Radius (m)"
+                       low-value="0.05" high-value="2.0" value="0.5" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="pipe-length-slider"
+                       label="Pipe Length (m)"
+                       low-value="1" high-value="20" value="5" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Label text="FLUID PROPERTIES" style="
+                -unity-font-style: bold;
+                font-size: 10px;
+                margin-top: 8px;
+                margin-bottom: 3px;
+                color: rgb(100,160,255);
+                letter-spacing: 1px;
+            "/>
+
+            <ui:Slider name="pipe-density-slider"
+                       label="Density (kg/m3)"
+                       low-value="0.5" high-value="1500" value="1.225" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="pipe-viscosity-slider"
+                       label="Dynamic Viscosity (Pa.s)"
+                       low-value="0.000001" high-value="0.02" value="0.0000181" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="pipe-roughness-slider"
+                       label="Wall Roughness (mm)"
+                       low-value="0" high-value="5" value="1.5" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="pipe-turbulence-slider"
+                       label="Turbulence (%)"
+                       low-value="0" high-value="100" value="1" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Toggle name="pipe-laminar-toggle"
+                       label="Force Laminar (Parabolic Inlet)"
+                       value="false"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Label text="SIMULATION" style="
+                -unity-font-style: bold;
+                font-size: 10px;
+                margin-top: 8px;
+                margin-bottom: 3px;
+                color: rgb(100,160,255);
+                letter-spacing: 1px;
+            "/>
+
+            <ui:Slider name="pipe-timescale-slider"
+                       label="Time Scale"
+                       low-value="0.1" high-value="5.0" value="1.0" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:SliderInt name="pipe-iterations-slider"
+                          label="Iterations / Frame"
+                          low-value="1" high-value="10" value="4" show-input-field="true"
+                          style="margin-bottom: 3px;"/>
+
+            <ui:DropdownField name="pipe-flow-axis-dropdown"
+                              label="Pipe Axis"
+                              choices="X Axis,Y Axis,Z Axis"
+                              value="X Axis"
+                              style="margin-bottom: 3px;"/>
+
+            <ui:Label text="PIPE DIAGNOSTICS" style="
+                -unity-font-style: bold;
+                font-size: 10px;
+                margin-top: 8px;
+                margin-bottom: 3px;
+                color: rgb(100,160,255);
+                letter-spacing: 1px;
+            "/>
+
+            <ui:VisualElement name="pipe-results-panel" style="
+                background-color: rgba(0,0,0,0.25);
+                border-radius: 4px;
+                padding-top: 5px;
+                padding-bottom: 5px;
+                padding-left: 8px;
+                padding-right: 8px;
+                margin-bottom: 4px;
+            ">
+                <ui:VisualElement style="flex-direction: row; margin-bottom: 2px;">
+                    <ui:Label text="Mean Velocity" style="flex-grow: 1; font-size: 10px; color: rgba(255,255,255,0.6);"/>
+                    <ui:Label name="pipe-res-mean-vel" text="--" style="font-size: 10px; color: rgb(200,235,255); -unity-font-style: bold;"/>
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-direction: row; margin-bottom: 2px;">
+                    <ui:Label text="Max Velocity" style="flex-grow: 1; font-size: 10px; color: rgba(255,255,255,0.6);"/>
+                    <ui:Label name="pipe-res-max-vel" text="--" style="font-size: 10px; color: rgb(200,235,255); -unity-font-style: bold;"/>
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-direction: row; margin-bottom: 2px;">
+                    <ui:Label text="Pressure Drop" style="flex-grow: 1; font-size: 10px; color: rgba(255,255,255,0.6);"/>
+                    <ui:Label name="pipe-res-pressure-drop" text="--" style="font-size: 10px; color: rgb(200,235,255); -unity-font-style: bold;"/>
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-direction: row; margin-bottom: 2px;">
+                    <ui:Label text="Friction Factor" style="flex-grow: 1; font-size: 10px; color: rgba(255,255,255,0.6);"/>
+                    <ui:Label name="pipe-res-friction" text="--" style="font-size: 10px; color: rgb(200,235,255); -unity-font-style: bold;"/>
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-direction: row; margin-bottom: 2px;">
+                    <ui:Label text="Head Loss" style="flex-grow: 1; font-size: 10px; color: rgba(255,255,255,0.6);"/>
+                    <ui:Label name="pipe-res-head-loss" text="--" style="font-size: 10px; color: rgb(200,235,255); -unity-font-style: bold;"/>
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-direction: row; margin-bottom: 2px;">
+                    <ui:Label text="Flow Rate" style="flex-grow: 1; font-size: 10px; color: rgba(255,255,255,0.6);"/>
+                    <ui:Label name="pipe-res-flow-rate" text="--" style="font-size: 10px; color: rgb(200,235,255); -unity-font-style: bold;"/>
+                </ui:VisualElement>
+                <ui:VisualElement style="flex-direction: row;">
+                    <ui:Label text="Pipe Reynolds" style="flex-grow: 1; font-size: 10px; color: rgba(255,255,255,0.6);"/>
+                    <ui:Label name="pipe-res-reynolds" text="--" style="font-size: 10px; color: rgb(200,235,255); -unity-font-style: bold;"/>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:Button name="generate-report-btn" text="Generate PDF Report" class="action-button" style="
+                margin-top: 10px;
+                padding-top: 8px;
+                padding-bottom: 8px;
+                -unity-font-style: bold;
+                background-color: rgba(40, 195, 240, 0.15);
+                border-color: rgba(40, 195, 240, 0.40);
+            "/>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="pipe-tab-model" style="display: none;">
+            <ui:Label text="INTERNAL GEOMETRY" class="wt-section-header" />
+
+            <ui:Label text="Position the model using viewport controls, then use the sliders below to set internal flow geometry parameters." style="
+                font-size: 10px;
+                white-space: normal;
+                margin-bottom: 12px;
+                color: rgba(255,255,255,0.45);
+            "/>
+
+            <ui:Button name="load-model-button" text="Import Model (.glb / .obj)" style="
+                margin-bottom: 8px;
+                padding-top: 9px;
+                padding-bottom: 9px;
+                -unity-font-style: bold;
+                font-size: 11px;
+                background-color: rgba(80,140,255,0.25);
+                border-color: rgba(80,140,255,0.6);
+            "/>
+
+            <!-- DIMENSIONS & WEIGHT -->
+            <ui:Label text="DIMENSIONS &amp; WEIGHT" class="wt-section-header" />
+
+            <ui:Slider name="vehicle-mass-slider"
+                       label="Mass (kg)"
+                       low-value="250" high-value="6000" value="1500" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="vehicle-wheelbase-slider"
+                       label="Wheelbase (m)"
+                       low-value="1.5" high-value="6.0" value="2.6" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="vehicle-cg-height-slider"
+                       label="CG Height (m)"
+                       low-value="0.15" high-value="1.5" value="0.35" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:FloatField name="vehicle-reference-area-field"
+                           label="Frontal Area (m², 0 = auto)"
+                           value="0"
+                           style="margin-bottom: 3px;"/>
+
+            <ui:FloatField name="vehicle-track-width-field"
+                           label="Track Width (m, 0 = auto)"
+                           value="0"
+                           style="margin-bottom: 3px;"/>
+            <ui:Slider name="model-scale-slider"
+                       label="Model Scale"
+                       low-value="0.10" high-value="4.00" value="1.00" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+            <ui:Slider name="model-offset-x-slider"
+                       label="Model Offset X (m)"
+                       low-value="-5.0" high-value="5.0" value="0.0" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+            <ui:Slider name="model-offset-y-slider"
+                       label="Model Offset Y (m)"
+                       low-value="-5.0" high-value="5.0" value="0.0" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+            <ui:Slider name="model-offset-z-slider"
+                       label="Model Offset Z (m)"
+                       low-value="-5.0" high-value="5.0" value="0.0" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <!-- SUSPENSION & ATTITUDE -->
+            <ui:Label text="SUSPENSION" class="wt-section-header" />
+
+            <ui:Slider name="vehicle-ride-height-slider"
+                       label="Ride Height (m)"
+                       low-value="0.0" high-value="0.5" value="0.0" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="vehicle-rake-slider"
+                       label="Rake Angle (deg)"
+                       low-value="-8.0" high-value="8.0" value="0.0" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Button name="reset-sim-button" text="Reset Simulation" style="
+                margin-top: 10px;
+                padding-top: 9px;
+                padding-bottom: 9px;
+                font-size: 11px;
+                background-color: rgba(255,80,80,0.15);
+                border-color: rgba(255,80,80,0.4);
+            "/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

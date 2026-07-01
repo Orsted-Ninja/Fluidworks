@@ -1,0 +1,12 @@
+# ninja log v5
+89	941	7955295528721040	FramePacing/CMakeFiles/swappywrapper.dir/UnitySwappyWrapper.cpp.o	161dc5eb4d79958d
+944	1789	7955295536271408	C:/Users/abhin/Desktop/project-stuff/Aeroflow-2/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/3s5h3a28/obj/arm64-v8a/libswappywrapper.so	c7885ceb2b5f2cba
+33	2995	7955295549562236	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	7d9fc19d77082a45
+25	3205	7955295551353137	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	1c934a5aa8becf4
+61	3291	7955295552556587	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	4a76ac998d62cddf
+44	3321	7955295552845608	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	1c973549fd99674e
+14	3434	7955295554039301	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	944b014221a743d5
+73	3848	7955295558258127	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	3fe35073a70b8986
+53	3947	7955295559143369	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	9b76261460bcf9b7
+2	4370	7955295563373305	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	3219267b569338ff
+4371	4544	7955295565240950	C:/Users/abhin/Desktop/project-stuff/Aeroflow-2/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/3s5h3a28/obj/arm64-v8a/libgame.so	ed77704880d8d785

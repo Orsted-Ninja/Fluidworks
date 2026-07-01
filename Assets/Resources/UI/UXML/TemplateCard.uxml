@@ -1,0 +1,30 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement class="template-card">
+        <ui:VisualElement class="card-preview">
+            <!-- Animation/Image will be bound here -->
+            <ui:VisualElement name="card-image" class="card-image" />
+            <ui:VisualElement class="card-badge">
+                <ui:Label name="card-badge-text" text="Fluid" class="badge-text" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement class="card-info">
+            <ui:Label name="card-title" text="Formula 1 Front Wing" class="card-title" />
+            <ui:Label name="card-author" text="by AeroFlow Solutions" class="card-author" />
+            
+            <ui:VisualElement class="card-stats">
+                <ui:Label name="card-type" text="External Aero" class="stat-text" />
+                <ui:VisualElement class="stat-dot" />
+                <ui:Label name="card-difficulty" text="Advanced" class="stat-text" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="card-actions">
+                <ui:Button name="card-download-btn" text="Download" class="card-btn card-btn--download" />
+                <ui:Button name="card-import-btn" text="Import" class="card-btn card-btn--import" style="display: none;" />
+                <ui:VisualElement name="card-progress" class="card-progress" style="display: none;">
+                    <ui:VisualElement name="progress-bar" class="progress-bar-fill" style="width: 0%;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

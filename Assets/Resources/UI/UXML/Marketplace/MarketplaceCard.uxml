@@ -1,0 +1,25 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement class="template-card">
+        <!-- Preview / Video Area -->
+        <ui:VisualElement name="preview-container" class="card-preview-container">
+            <ui:VisualElement name="video-render-target" class="card-video-player" />
+            <ui:Label name="download-progress-overlay" text="0%" style="position: absolute; bottom: 5px; right: 5px; font-size: 10px; color: white; background-color: rgba(0,0,0,0.5); padding: 1px 4px; border-radius: 3px; display: none;"/>
+        </ui:VisualElement>
+
+        <!-- Info Area -->
+        <ui:VisualElement class="card-info">
+            <ui:Label name="template-title" text="Laminar Pipe Flow" class="card-title" />
+            <ui:Label name="template-author" text="by FluidWorks Team" class="card-author" />
+            
+            <ui:VisualElement class="card-stats-row">
+                <ui:Label name="stat-difficulty" text="Beginner" class="card-stat" />
+                <ui:Label name="stat-solver" text="Navier-Stokes" class="card-stat" />
+            </ui:VisualElement>
+
+            <ui:VisualElement class="card-button-row">
+                <ui:Button name="btn-download" text="Download" class="card-btn-download" />
+                <ui:Button name="btn-import" text="Import" class="card-btn-import" style="display: none;"/>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

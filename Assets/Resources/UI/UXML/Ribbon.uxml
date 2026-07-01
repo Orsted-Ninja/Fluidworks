@@ -1,0 +1,144 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+     <ui:VisualElement name="ribbon" class="ribbon">
+        <ui:VisualElement name="title-bar" class="title-bar">
+            <ui:VisualElement style="flex-direction: row; align-items: center;">
+                <ui:VisualElement class="ribbon-logo-image" />
+                <ui:Label text="Engineering Suite 2026" class="title-bar-text" />
+                <ui:Label text="|" class="title-bar-separator" />
+                <ui:Label text="Computational Fluid Dynamics" class="title-bar-text" />
+            </ui:VisualElement>
+            <ui:VisualElement style="flex-direction: row; align-items: center; gap: 6px;">
+                <ui:Label name="sim-status-indicator" text="" class="sim-status-badge" />
+                <ui:Button name="close-app-button" class="icon-button" text="X" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="ribbon-tabs" class="ribbon-tabs-container">
+            <ui:Button name="home-screen-button" text="Home" class="ribbon-tab-button" style="background-color: rgba(40, 195, 240, 0.15); border-color: rgba(40, 195, 240, 0.4); color: rgb(40, 195, 240); margin-right: 12px; border-radius: 4px;" tooltip="Return to Home Actions" />
+            <ui:Button name="setup-tab-button" text="Setup" class="ribbon-tab-button ribbon-tab-button--active" />
+            <ui:Button name="simulation-tab-button" text="Simulation" class="ribbon-tab-button" />
+            <ui:VisualElement name="view-group" class="view-group">
+                <ui:Button name="view-tab-button" text="View" class="ribbon-tab-button" />
+                <ui:Button name="windows-tab-button" text="Windows" class="ribbon-tab-button" />
+                <ui:VisualElement name="quick-controls" class="quick-controls">
+                    <ui:Button name="quick-slow-button" class="quick-control-button" text="&lt;&lt;" tooltip="Decrease speed" />
+                    <ui:Button name="quick-play-toggle-button" class="quick-control-button quick-control-play" text="&gt;" tooltip="Play / Pause" />
+                    <ui:Button name="quick-fast-button" class="quick-control-button" text="&gt;&gt;" tooltip="Increase speed" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="ribbon-content" class="ribbon-content">
+            <!-- SETUP TAB -->
+            <ui:VisualElement name="setup-tab-content" class="ribbon-tab-content">
+                <ui:VisualElement class="ribbon-section">
+                    <ui:Label text="Study Type" class="ribbon-section-label" />
+                    <ui:VisualElement class="ribbon-section-row">
+                        <ui:Button name="template-external-aero-button" text="External Aero" tooltip="Wind tunnel for cars, bikes, airfoils" />
+                        <ui:Button name="template-internal-flow-button" text="Internal Flow" tooltip="Pipe and duct flow analysis" />
+                        <ui:Button name="template-rotating-machinery-button" text="Rotatory Mode" tooltip="Windmills, fans, propellers, turbines" />
+                        <ui:Button name="template-free-surface-button" text="Free-Surface Flow" tooltip="Dam break, sloshing, wave impact" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="ribbon-divider" />
+            </ui:VisualElement>
+
+            <!-- SIMULATION TAB -->
+            <ui:VisualElement name="simulation-tab-content" class="ribbon-tab-content" style="display: none;">
+                <ui:VisualElement class="ribbon-section">
+                    <ui:Label text="Playback" class="ribbon-section-label" />
+                    <ui:VisualElement class="ribbon-section-row">
+                        <ui:Button name="rewind-button" text="&lt;&lt;" tooltip="Slow down" />
+                        <ui:Button name="play-pause-button" text="Play" tooltip="Play / Pause simulation" />
+                        <ui:Button name="fast-forward-button" text="&gt;&gt;" tooltip="Speed up" />
+                        <ui:Label name="speed-label" text="(1.0x)" style="margin-left: 4px; color: rgb(177,201,220); min-width: 50px;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="ribbon-divider" />
+
+                <ui:VisualElement class="ribbon-section">
+                    <ui:Label text="Properties" class="ribbon-section-label" />
+                    <ui:VisualElement class="ribbon-section-row">
+                        <ui:Button name="geometry-panel-button" text="Geometry" />
+                        <ui:Button name="fluids-panel-button" text="Materials" />
+                        <ui:Button name="results-panel-button" text="Results" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="ribbon-divider" />
+
+                <ui:VisualElement class="ribbon-section">
+                    <ui:Label text="Capture" class="ribbon-section-label" />
+                    <ui:VisualElement class="ribbon-section-row">
+                        <ui:Button name="export-video-button" text="Record Video" tooltip="Record the 3D viewport as MP4 (excludes UI)" />
+                        <ui:Button name="export-screenshot-button" text="Screenshot" tooltip="Save a viewport screenshot" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="ribbon-divider" />
+
+                <ui:VisualElement class="ribbon-section">
+                    <ui:Label text="Export" class="ribbon-section-label" />
+                    <ui:VisualElement class="ribbon-section-row">
+                        <ui:Button name="export-csv-button" text="Results CSV" tooltip="Export time-series data" />
+                        <ui:Button name="export-json-button" text="Snapshot JSON" tooltip="Export current state" />
+                        <ui:Button name="export-report-button" text="HTML Report" tooltip="Generate a styled summary report" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- VIEW TAB -->
+            <ui:VisualElement name="view-tab-content" class="ribbon-tab-content" style="display: none;">
+                <ui:VisualElement class="ribbon-section">
+                    <ui:Label text="Camera" class="ribbon-section-label" />
+                    <ui:VisualElement class="ribbon-section-row">
+                        <ui:Button name="iso-view-button" text="Iso" tooltip="Isometric view" />
+                        <ui:Button name="front-view-button" text="Front" tooltip="Front view" />
+                        <ui:Button name="top-view-button" text="Top" tooltip="Top-down view" />
+                        <ui:Button name="side-view-button" text="Side" tooltip="Side view" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="ribbon-divider" />
+
+                <ui:VisualElement class="ribbon-section">
+                    <ui:Label text="Shading" class="ribbon-section-label" />
+                    <ui:VisualElement class="ribbon-section-row">
+                        <ui:Button name="standard-render-button" text="Standard" />
+                        <ui:Button name="wireframe-render-button" text="Wireframe" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="ribbon-divider" />
+
+                <ui:VisualElement class="ribbon-section">
+                    <ui:Label text="Navigation" class="ribbon-section-label" />
+                    <ui:VisualElement class="ribbon-section-row" style="align-items: center;">
+                        <ui:VisualElement name="camera-speed-container" class="camera-speed-container">
+                            <ui:Label name="camera-speed-label" text="Speed: 12.0" />
+                            <ui:Slider name="camera-speed-slider" low-value="2" high-value="40" value="12" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement class="ribbon-section" style="justify-content: center; padding-left: 12px;">
+                    <ui:Label name="camera-controls-label" class="camera-controls-label" text="Alt+LMB Orbit | MMB Pan | Scroll Zoom | RMB+WASD Fly | Shift Boost | F Frame" style="min-width: auto; margin-top: 0; padding-left: 0; color: rgba(255,255,255,0.4);" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- WINDOWS TAB -->
+            <ui:VisualElement name="windows-tab-content" class="ribbon-tab-content" style="display: none;">
+                <ui:VisualElement class="ribbon-section">
+                    <ui:Label text="Panels" class="ribbon-section-label" />
+                    <ui:VisualElement class="ribbon-section-row">
+                        <ui:Button name="windows-outline-toggle-button" text="Outline: On" tooltip="Show or hide the simulation outline panel" />
+                        <ui:Button name="windows-console-toggle-button" text="Console: On" tooltip="Show or hide the console panel" />
+                        <ui:Button name="windows-properties-toggle-button" text="Properties: On" tooltip="Show or hide the properties panel" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

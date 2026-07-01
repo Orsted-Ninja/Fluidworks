@@ -1,0 +1,107 @@
+AEROFLOW PROJECT OVERVIEW (ORGANIZED)
+=====================================
+
+1) What This Project Is
+- AeroFlow is a Unity-based real-time CFD-style visualization tool (Unity 6000.x, URP).
+- It focuses on interactive, visually plausible flow rather than full Navier-Stokes accuracy.
+- It provides four core simulation templates accessible from the Home tab.
+- It includes runtime model loading, wind-tunnel style external aero, internal flow, rotating machinery, and free-surface (dam break) simulations.
+
+2) How It Works (High-Level)
+- A simulation template loads a scene and attaches the right simulation components.
+- The solver runs mostly on the GPU using compute shaders.
+- The UI panels bind to simulation settings and update diagnostics/metrics periodically.
+- Visualization components render streamlines, slices, particles, and surface pressure colors.
+- Results can be exported to CSV, and videos can be exported via ffmpeg.
+
+3) How To Use It (Quick Start)
+- Open the project in Unity 6000.3.1f1 or later.
+- Open `Assets/Scenes/SampleScene.unity`.
+- Press Play to launch the UI.
+- In the Home tab, select a template:
+  - External Aero
+  - Internal Flow
+  - Rotating Machinery
+  - Free-Surface Flow
+- Load a model (OBJ/STL/FBX/GLB/GLTF) if applicable.
+- Use the Simulation tab to Play/Pause, adjust speed, and change settings.
+- Use the View tab for camera presets and render modes.
+
+4) Features (Explicit, Feature-by-Feature)
+
+Core Simulation Templates
+- External Aero (Wind Tunnel): Navier-Stokes grid solver on GPU. Visuals: streamlines, velocity slice, pressure slice, effects.
+- Internal Flow (Pipe/Duct): Uses pipe flow simulation components and provides friction/head-loss metrics (requires compute shader support).
+- Rotating Machinery: Fan/turbine/impeller with rotating zone, torque/power/efficiency metrics (requires compute shader support).
+- Free-Surface Flow: Dam break / sloshing using SPH particle method.
+
+Visualization & Rendering
+- StreamlineFieldRenderer: body-focused streamlines.
+- FlowFieldSliceRenderer: transparent velocity/pressure slices.
+- FlowParticleSystem: optional particle overlays.
+- SurfacePressureVisualizer: pressure-mapped surface shading on the model.
+
+Runtime Model Loading
+- Supports runtime import of OBJ, STL, FBX, GLB, GLTF.
+- Optional hidden simulation proxy mesh support for better solver behavior.
+
+UI and Interaction
+- Ribbon tabs: Home, Simulation, View.
+- Simulation controls: Play/Pause, time scale, iterations per frame, reset.
+- View controls: camera presets (ISO, front, top, side), render style switches.
+- Properties panels for each template with bound sliders/toggles.
+
+Diagnostics & Metrics
+- External Aero: drag/lift coefficients, forces, Reynolds number, pressure, etc.
+- Internal Flow: friction factor, head loss, flow rate, Reynolds.
+- Rotating Machinery: torque, power, efficiency, angular velocity, swirl.
+- Free-Surface: kinetic energy, splash height, containment, impact pressure.
+- Quality scoring and validation metrics when available.
+
+Exports
+- CSV export: one file with 46+ columns across all modes.
+- Video export: MP4 via ffmpeg (records simulation camera only).
+
+5) Pros
+- Real-time, interactive CFD-style visualization (fast iteration and learning).
+- Multiple simulation modes in one UI.
+- GPU-accelerated compute shaders for fluid calculations.
+- Easy runtime model import for rapid experimentation.
+- Built-in export (CSV and MP4) for reporting and presentations.
+- Clear UI with testing/validation guides.
+
+6) Cons / Limitations (Known)
+- Visual plausibility focus, not full-accuracy CFD.
+- Internal Flow and Rotating Machinery require compute shaders that may be missing; if missing, the solver does not run.
+- FSI Lite and Playback templates are placeholders.
+- Video export requires ffmpeg; otherwise only PNG frames are saved.
+- High solver grid resolutions can be heavy on GPUs.
+- Very large models can slow voxelization.
+
+7) Applications
+- Automotive external aerodynamics (shape iteration, wake understanding).
+- Basic duct/pipe flow education and validation exercises.
+- Fan/impeller conceptual visualization.
+- Free-surface flow demos (dam break, sloshing).
+- Classroom and lab visualization for fluid dynamics concepts.
+- Rapid design communication for non-experts.
+
+8) Usefulness (Why It Matters)
+- Bridges the gap between textbook theory and expensive full CFD packages.
+- Helps teams and students understand flow behavior quickly.
+- Offers immediate visual feedback to guide early-stage design decisions.
+- Generates exportable data for reports and presentations.
+
+9) Product Pitch (Investor-Friendly, Non-Technical)
+AeroFlow turns complex fluid behavior into an interactive visual experience that anyone can understand in minutes. Traditional CFD tools are expensive, slow, and require specialized expertise. AeroFlow runs in real time, lets users load their own models, and instantly see airflow or fluid behavior with clear metrics and visuals. This makes it ideal for education, early-stage design review, and quick client demos. The product targets universities, engineering training programs, and design teams that need fast insight rather than heavy simulation workloads. It lowers the barrier to fluid analysis, reduces iteration time, and makes technical results easy to communicate to stakeholders.
+
+10) Where The Core Code Lives (for Reference)
+- Wind tunnel driver: `Assets/Scripts/Sim3D/WindTunnel/WindTunnelSimulation3D.cs`
+- Wind tunnel solver: `Assets/Scripts/Physics/WindTunnel/NavierStokesGridSolver.cs`
+- Wind tunnel compute: `Assets/Resources/Compute/WindTunnel/NavierStokes3D.compute`
+- Dam break solver: `Assets/Scripts/Sim3D/DamBreak/Simulation3D.cs`
+- Dam break compute: `Assets/Resources/Compute/DamBreak/FluidSim3D.compute`
+- Visualization: `Assets/Scripts/Visualization/WindTunnel/*`
+- UI: `Assets/Scripts/UI/*` and `Assets/Resources/UI/UXML/*`
+
+End of File
