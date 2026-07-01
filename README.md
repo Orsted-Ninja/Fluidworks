@@ -2,7 +2,7 @@
 
 FluidWorks is a Unity-based real-time CFD-style visualization tool focused on interactive engineering workflows rather than full high-fidelity certification CFD.
 
-✨ **A miniproject created by [Orsted-Ninja](https://github.com/Orsted-Ninja) & Abhinav Manoj!** ✨
+✨ **My Miniproject by [Orsted-Ninja](https://github.com/Orsted-Ninja), with contributor [Abhinav Manoj](https://github.com/abhinavmanoj05)!** ✨
 
 *Special Mentions: The main scene, physics setup, physical interactions, and the MLP were extensively handled and fixed up by Orsted-Ninja.*
 
