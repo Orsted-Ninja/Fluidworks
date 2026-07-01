@@ -1,0 +1,30 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:Style src="project://database/Assets/Resources/UI/USS/MainStyle.uss" />
+    <ui:Style src="project://database/Assets/Resources/UI/USS/SettingsWindow.uss" />
+
+    <ui:VisualElement name="settings-overlay" class="settings-overlay" picking-mode="Position">
+        <ui:VisualElement name="settings-modal" class="settings-modal settings-modal--simple">
+            <!-- Header -->
+            <ui:VisualElement class="settings-header">
+                <ui:Label text="SYSTEM SETTINGS" class="settings-title" />
+                <ui:VisualElement style="flex-grow: 1;" />
+                <ui:Button name="settings-close-x" text="×" class="settings-close-x" />
+            </ui:VisualElement>
+
+            <!-- Main Body (Scrollable List) -->
+            <ui:VisualElement class="settings-body-simple">
+                <ui:ScrollView name="settings-scroll-view" class="settings-scroll-view--large">
+                    <ui:VisualElement name="all-settings-container" class="all-settings-container" />
+                </ui:ScrollView>
+            </ui:VisualElement>
+
+            <!-- Footer -->
+            <ui:VisualElement class="settings-footer">
+                <ui:Button name="settings-reset-btn" text="Reset to Defaults" class="settings-footer-btn settings-footer-btn--danger" />
+                <ui:VisualElement style="flex-grow: 1;" />
+                <ui:Button name="settings-back-btn" text="Back" class="settings-footer-btn" />
+                <ui:Button name="settings-save-btn" text="Save &amp; Apply" class="settings-footer-btn settings-footer-btn--primary" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

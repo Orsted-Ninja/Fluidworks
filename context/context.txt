@@ -1,0 +1,20 @@
+# AeroFlow CFD Visualization Project Context
+
+## Overview
+AeroFlow combines GPU-based SPH and Navier–Stokes grid solvers inside Unity, with the UI rendered through the UI Toolkit (UXML + USS). The wind-tunnel driver now operates purely on a grid velocity field, while the dam-break scene retains the SPH particle system for water.
+
+**Working Directory:** `C:/Users/abhin/Desktop/project-stuff/Aeroflow`
+
+## Recent Highlights
+- The ribbon view controls are SAT-compliant after swapping `pointer-events` in `MainStyle.uss` and wiring events through `RibbonController`/`MainScreenController`.
+- The wind tunnel now renders streamlines instead of particles via `WindTunnelStreamlineRenderer`, and the solver remains the Navier–Stokes grid pipeline.
+- Quick playback controls (⏪/▶/⏩) sit next to the View tab; they toggle simulation playback and speed in sync with the Simulation tab buttons.
+- `RuntimeModelLoader` no longer prompts for STL/CAD; it only accepts `.glb`/`.gltf` models, aligns them to whichever simulation is running, and reinitializes their rigidbodies on scene switches so they stay on the floor.
+
+## Architecture in a Nutshell
+- **UI:** Ribbon UXML defines Home/Simulation/View tabs plus quick controls. Controllers (RibbonController, MainScreenController, PropertiesPanelController) query buttons via `root.Q<>()` and issue events for templates, render modes, and panels.
+- **Display:** `CameraController` snaps to preset views; `VisualsBootstrapper` handles lighting/background and applies render-mode overrides; `MainStyle.uss` centralizes styling for all UI controls.
+- **Physics:** `Simulation3D` runs the dam-break SPH compute buffers; `WindTunnelSimulation3D` drives the Navier–Stokes grid and forwards its velocity field to the streamline renderer. The compute shaders live under `Assets/Scripts/Sim3D/Compute`.
+
+## Next Steps
+- Test the streamline flow around the car plus the quick playback controls. Any UI styling adjustments should go into `MainStyle.uss`.

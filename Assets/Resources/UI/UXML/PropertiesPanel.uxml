@@ -1,0 +1,56 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="properties-panel" class="panel">
+        <ui:Label name="properties-header" text="Properties" class="panel-header" />
+
+        <ui:ScrollView>
+            <!-- Default Properties View -->
+            <ui:VisualElement name="properties-view">
+                <ui:Label text="Material Selection" class="section-header" />
+                <ui:DropdownField name="material-dropdown" label="Fluid Material" />
+
+                <ui:Label text="Object Definition" class="section-header" />
+                <ui:DropdownField name="object-shape-dropdown" label="Reference Shape" />
+
+                <ui:Label text="Fluid Properties" class="section-header" />
+                <ui:FloatField name="density-field" label="Density (kg/m^3)" />
+                <ui:Slider name="viscosity-slider" label="Viscosity (kg/(m*s))" low-value="0.000001" high-value="0.02" value="0.001" show-input-field="true" />
+
+                <ui:Label text="Inlet Conditions" class="section-header" />
+                <ui:FloatField name="velocity-field" label="Velocity (m/s)" />
+                <ui:FloatField name="turbulence-field" label="Turbulence" />
+            </ui:VisualElement>
+
+            <!-- Results View -->
+            <ui:VisualElement name="results-view" style="display: none;">
+                <ui:Label text="Efficiency Rating" class="section-header" />
+                <ui:Label name="efficiency-rating-label" class="large-metric" />
+                
+                <ui:Label text="Aerodynamic Assessment" class="section-header" />
+                <ui:Label name="assessment-label" />
+
+                <ui:Label text="Flow Regime" class="section-header" />
+                <ui:Label name="flow-regime-label" />
+
+                <ui:Label text="Optimization Tips" class="section-header" />
+                <ui:VisualElement name="suggestions-list" />
+            </ui:VisualElement>
+
+            <!-- Monitors View -->
+            <ui:VisualElement name="monitors-view" style="display: none;">
+                <ui:Label text="Residuals" class="section-header" />
+                <ui:Label name="residuals-label" />
+
+                <ui:Label text="Forces Report" class="section-header" />
+                <ui:Label name="drag-force-label" />
+                <ui:Label name="lift-force-label" />
+                <ui:Label name="drag-coeff-label" />
+            </ui:VisualElement>
+        </ui:ScrollView>
+
+        <ui:VisualElement name="live-indicator" class="live-indicator">
+            <ui:VisualElement class="live-indicator-dot" />
+            <ui:Label text="LIVE SIMULATION ACTIVE" class="live-indicator-text" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
+

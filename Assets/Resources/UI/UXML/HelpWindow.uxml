@@ -1,0 +1,93 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:Style src="project://database/Assets/Resources/UI/USS/MainStyle.uss" />
+    <ui:Style src="project://database/Assets/Resources/UI/USS/SettingsWindow.uss" />
+
+    <ui:VisualElement name="help-overlay" class="settings-overlay" picking-mode="Position">
+        <ui:VisualElement name="help-modal" class="settings-modal--simple" style="width: 680px; height: 720px;">
+            <!-- Header -->
+            <ui:VisualElement class="settings-header">
+                <ui:Label text="QUICK HELP &amp; SHORTCUTS" class="settings-title" />
+                <ui:VisualElement style="flex-grow: 1;" />
+                <ui:Button name="help-close-x" text="×" class="settings-close-x" />
+            </ui:VisualElement>
+
+            <!-- Main Body -->
+            <ui:ScrollView class="settings-scroll-view--large">
+                <ui:VisualElement class="all-settings-container">
+                    
+                    <!-- Viewport Navigation -->
+                    <ui:Label text="VIEWPORT NAVIGATION" class="section-header" />
+                    <ui:VisualElement class="setting-row">
+                        <ui:VisualElement class="setting-label-col">
+                            <ui:Label text="Rotate Camera" class="setting-title" />
+                            <ui:Label text="Orbit around the model or center" class="setting-desc" />
+                        </ui:VisualElement>
+                        <ui:Label text="Right Click + Drag" style="color: rgb(40, 195, 240); -unity-font-style: bold; font-size: 11px;" />
+                    </ui:VisualElement>
+                    
+                    <ui:VisualElement class="setting-row">
+                        <ui:VisualElement class="setting-label-col">
+                            <ui:Label text="Pan View" class="setting-title" />
+                            <ui:Label text="Move the camera horizontally/vertically" class="setting-desc" />
+                        </ui:VisualElement>
+                        <ui:Label text="Middle Click + Drag" style="color: rgb(40, 195, 240); -unity-font-style: bold; font-size: 11px;" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="setting-row">
+                        <ui:VisualElement class="setting-label-col">
+                            <ui:Label text="Zoom In/Out" class="setting-title" />
+                            <ui:Label text="Change distance to focal point" class="setting-desc" />
+                        </ui:VisualElement>
+                        <ui:Label text="Scroll Wheel" style="color: rgb(40, 195, 240); -unity-font-style: bold; font-size: 11px;" />
+                    </ui:VisualElement>
+
+                    <!-- Keyboard Shortcuts -->
+                    <ui:Label text="KEYBOARD SHORTCUTS" class="section-header" style="margin-top: 30px;" />
+                    <ui:VisualElement class="setting-row">
+                        <ui:VisualElement class="setting-label-col">
+                            <ui:Label text="Toggle HUD Visibility" class="setting-title" />
+                            <ui:Label text="Hide/Show all UI overlays for a clean view" class="setting-desc" />
+                        </ui:VisualElement>
+                        <ui:Label text="[ Z ]" style="color: white; -unity-font-style: bold; font-size: 12px; background-color: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px;" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="setting-row">
+                        <ui:VisualElement class="setting-label-col">
+                            <ui:Label text="Save Project" class="setting-title" />
+                            <ui:Label text="Quickly save your current simulation state" class="setting-desc" />
+                        </ui:VisualElement>
+                        <ui:Label text="[ Ctrl + S ]" style="color: white; -unity-font-style: bold; font-size: 12px; background-color: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px;" />
+                    </ui:VisualElement>
+
+                    <ui:VisualElement class="setting-row">
+                        <ui:VisualElement class="setting-label-col">
+                            <ui:Label text="Focus Console" class="setting-title" />
+                            <ui:Label text="Open and focus the command input" class="setting-desc" />
+                        </ui:VisualElement>
+                        <ui:Label text="[ ` ] (Backtick)" style="color: white; -unity-font-style: bold; font-size: 12px; background-color: rgba(255,255,255,0.1); padding: 2px 8px; border-radius: 4px;" />
+                    </ui:VisualElement>
+
+                    <!-- Simulation Workflow -->
+                    <ui:Label text="SIMULATION WORKFLOW" class="section-header" style="margin-top: 30px;" />
+                    <ui:VisualElement style="padding: 0 16px;">
+                        <ui:Label text="1. Select a Template" style="color: white; -unity-font-style: bold; margin-bottom: 4px;" />
+                        <ui:Label text="Choose from Wind Tunnel, Pipe Flow, or Rotatory modes on the home screen." class="setting-desc" style="margin-bottom: 12px;" />
+                        
+                        <ui:Label text="2. Import Geometry" style="color: white; -unity-font-style: bold; margin-bottom: 4px;" />
+                        <ui:Label text="Load your .obj or .glb model. FluidWorks will auto-align it for the selected flow." class="setting-desc" style="margin-bottom: 12px;" />
+
+                        <ui:Label text="3. Configure &amp; Solve" style="color: white; -unity-font-style: bold; margin-bottom: 4px;" />
+                        <ui:Label text="Adjust boundary conditions in the right panel and press 'Run Simulation' in the ribbon." class="setting-desc" style="margin-bottom: 12px;" />
+                    </ui:VisualElement>
+
+                </ui:VisualElement>
+            </ui:ScrollView>
+
+            <!-- Footer -->
+            <ui:VisualElement class="settings-footer">
+                <ui:VisualElement style="flex-grow: 1;" />
+                <ui:Button name="help-close-btn" text="Got it" class="settings-footer-btn settings-footer-btn--primary" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

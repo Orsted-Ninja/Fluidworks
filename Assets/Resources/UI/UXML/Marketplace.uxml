@@ -1,0 +1,55 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:Style src="project://database/Assets/Resources/UI/USS/MainStyle.uss" />
+    <ui:Style src="project://database/Assets/Resources/UI/USS/Marketplace.uss" />
+
+    <ui:VisualElement name="marketplace-overlay" class="marketplace-overlay" picking-mode="Position">
+        <ui:VisualElement name="marketplace-modal" class="marketplace-modal">
+            <!-- Header -->
+            <ui:VisualElement class="market-header">
+                <ui:VisualElement class="market-header-left">
+                    <ui:VisualElement class="market-logo icon-marketplace" />
+                    <ui:Label text="FLUIDWORKS MARKETPLACE" class="market-title" />
+                </ui:VisualElement>
+                
+                <ui:VisualElement class="market-search-container">
+                    <ui:TextField name="market-search" placeholder-text="Search simulations..." class="market-search-field" />
+                </ui:VisualElement>
+
+                <ui:VisualElement style="flex-grow: 1;" />
+                <ui:Button name="market-close-btn" text="×" class="market-close-btn" />
+            </ui:VisualElement>
+
+            <!-- Main area -->
+            <ui:VisualElement class="market-body">
+                <!-- Filters Sidebar -->
+                <ui:VisualElement class="market-sidebar">
+                    <ui:Label text="COLLECTIONS" class="sidebar-section-title" />
+                    <ui:Button name="filter-featured" text="Featured" class="sidebar-btn sidebar-btn--active" />
+                    <ui:Button name="filter-trending" text="Trending" class="sidebar-btn" />
+                    <ui:Button name="filter-educational" text="Educational" class="sidebar-btn" />
+                    
+                    <ui:VisualElement class="sidebar-divider" />
+                    <ui:Label text="YOURS" class="sidebar-section-title" />
+                    <ui:Button name="filter-installed" text="Installed" class="sidebar-btn" />
+                </ui:VisualElement>
+
+                <!-- Grid View -->
+                <ui:VisualElement class="market-content">
+                    <ui:ScrollView name="market-scroll-view" class="market-scroll-view">
+                        <ui:VisualElement name="market-grid" class="market-grid" />
+                    </ui:ScrollView>
+                    
+                    <!-- Loading Overlay -->
+                    <ui:VisualElement name="market-loading" class="market-loading">
+                        <ui:Label text="Fetching Simulations..." class="loading-text" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- Footer -->
+            <ui:VisualElement class="market-footer">
+                <ui:Label text="Download location: %USERROOT%\FluidWorks\Templates" class="market-footer-info" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

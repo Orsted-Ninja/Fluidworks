@@ -1,0 +1,85 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="analysis-view">
+        <ui:Label text="Results computation is manual. Enable it only when you want to inspect or export updated values." class="property-group-header" style="white-space: normal; font-size: 10px; color: #aaaaaa; margin-bottom: 8px;" />
+        <ui:VisualElement name="results-control-panel" class="button-row" style="margin-bottom: 12px;">
+            <ui:Button name="results-compute-toggle-button" text="Start Results Computation" tooltip="Enable live results calculation while this tab is open" />
+            <ui:Label name="results-compute-status-label" text="Results computation is paused." style="align-self: center; flex-grow: 1; white-space: normal; color: #aaaaaa;" />
+        </ui:VisualElement>
+
+        <!-- AERO COEFFICIENTS -->
+        <ui:Label text="Aerodynamic Coefficients" class="property-group-header" />
+        <ui:VisualElement name="metrics-panel" class="metrics-panel">
+            <ui:Label name="drag-value" text="Cd (Drag):  0.000" />
+            <ui:Label name="lift-value" text="Cl (Lift):  0.000" />
+            <ui:Label name="side-force-value" text="Cs (Side):  0.000" />
+            <ui:Label name="reynolds-value" text="Reynolds:  0.00E+0" />
+            <ui:Label name="pressure-value" text="Dynamic Pressure:  0 Pa" />
+        </ui:VisualElement>
+
+        <!-- FORCES & MOMENTS -->
+        <ui:Label text="Forces &amp; Moments" class="property-group-header" style="margin-top: 14px;" />
+        <ui:VisualElement class="metrics-panel">
+            <ui:Label name="reference-area-value" text="Frontal Area:  0.00 m²" />
+            <ui:Label name="drag-force-value" text="Drag Force:  0 N" />
+            <ui:Label name="vertical-force-value" text="Lift Force:  0 N" />
+            <ui:Label name="downforce-value" text="Downforce:  0 N" />
+            <ui:Label name="cop-value" text="CoP Offset:  0.00 m" />
+            <ui:Label name="pitch-moment-value" text="Pitch Moment:  0 Nm" />
+            <ui:Label name="yaw-moment-value" text="Yaw Moment:  0 Nm" />
+            <ui:Label name="roll-moment-value" text="Roll Moment:  0 Nm" />
+            <ui:Label name="axle-load-value" text="Axle Loads (F / R):  0 / 0 N" />
+            <ui:Label name="top-speed-value" text="Est. Top Speed:  0 km/h" />
+        </ui:VisualElement>
+
+        <!-- FLOW ASSESSMENT -->
+        <ui:Label text="Flow Assessment" class="property-group-header" style="margin-top: 14px;" />
+        <ui:VisualElement name="assessment-panel" class="assessment-panel">
+            <ui:Label name="flow-regime-label" text="Regime: -" />
+            <ui:Label name="drag-comment-label" text="Assessment: -" />
+            <ui:Label name="quality-rating-label" text="Rating: -" />
+            <ui:Label name="quality-score-label" text="Score: -" />
+            <ui:Label name="quality-tips-label" text="Tips: -" style="white-space: normal;" />
+        </ui:VisualElement>
+
+        <!-- NS DIAGNOSTICS -->
+        <ui:Label text="Solver Diagnostics" class="property-group-header" style="margin-top: 14px;" />
+        <ui:VisualElement name="navier-panel" class="assessment-panel">
+            <ui:Label name="navier-state-label" text="Navier-Stokes Grid: Waiting" />
+            <ui:Label name="navier-mean-velocity-label" text="Mean Velocity: 0.000 m/s" />
+            <ui:Label name="navier-max-velocity-label" text="Peak Velocity: 0.000 m/s" />
+            <ui:Label name="navier-pressure-drop-label" text="Pressure Drop: 0.000 Pa" />
+            <ui:Label name="navier-wall-shear-label" text="Wall Shear: 0.00000 Pa" />
+            <ui:Label name="navier-divergence-label" text="Divergence: 0.00E+0" />
+        </ui:VisualElement>
+
+        <!-- ML MODEL QUALITY ANALYSIS -->
+        <ui:Label text="Model Quality Analysis (ML)" class="property-group-header" style="margin-top: 14px;" />
+        <ui:VisualElement name="model-quality-panel" class="assessment-panel">
+            <ui:Label name="model-quality-score-label" text="Overall Score: -" />
+            <ui:Label name="model-quality-grade-label" text="Grade: -" />
+            <ui:Label name="model-predicted-cd-label" text="Predicted Cd Range: -" />
+            <ui:Label name="model-separation-risk-label" text="Separation Risk: -" />
+            <ui:Label name="model-downforce-label" text="Downforce Potential: -" />
+            <ui:Label name="model-efficiency-label" text="ML Efficiency Score: -" />
+        </ui:VisualElement>
+
+        <ui:Label text="Geometric Feature Breakdown" class="property-group-header" style="margin-top: 14px;" />
+        <ui:VisualElement name="model-features-panel" class="assessment-panel">
+            <ui:Label name="model-features-label" text="Load a model to analyze..." style="white-space: normal;" />
+        </ui:VisualElement>
+
+        <ui:Label text="Improvement Suggestions" class="property-group-header" style="margin-top: 14px;" />
+        <ui:VisualElement name="model-improvements-panel" class="assessment-panel">
+            <ui:Label name="model-improvements-label" text="Load a model to see suggestions..." style="white-space: normal;" />
+        </ui:VisualElement>
+
+        <!-- EXPORT SECTION -->
+        <ui:Label text="Export" class="property-group-header" style="margin-top: 14px;" />
+        <ui:VisualElement name="export-panel" class="button-row">
+            <ui:Button name="export-results-button" text="Export Time-Series CSV" tooltip="Export all recorded metrics as a CSV spreadsheet" />
+            <ui:Button name="export-snapshot-button" text="Export Current State (JSON)" tooltip="Export the current simulation snapshot" />
+            <ui:Button name="export-report-button-panel" text="Generate HTML Report" tooltip="Create a styled summary report you can share" />
+            <ui:Button name="export-pdf-report-button-panel" text="Generate PDF Report" tooltip="Create a PDF report package" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,15 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="workflow-template-view" class="panel-view">
+        <ui:Label text="Workflow Template" class="section-header" />
+        <ui:Label name="workflow-template-title" text="External Aero" class="large-metric" />
+
+        <ui:Label text="Description" class="section-header" />
+        <ui:Label name="workflow-template-summary" text="Car/bike/airfoil in a wind tunnel domain." />
+
+        <ui:Label text="Primary Outputs" class="section-header" />
+        <ui:Label name="workflow-template-outputs" text="Cd, Cl, pressure map, streamlines" />
+
+        <ui:Label text="Notes" class="section-header" />
+        <ui:Label text="Choose a template from Home. Unsupported high-fidelity tasks are routed to the nearest working real-time baseline." />
+    </ui:VisualElement>
+</ui:UXML>

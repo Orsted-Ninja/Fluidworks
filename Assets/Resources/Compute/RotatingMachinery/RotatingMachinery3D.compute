@@ -1,0 +1,573 @@
+// RotatingMachinery3D.compute — Incompressible Navier-Stokes on a 3D Eulerian grid
+// with Multiple Reference Frame (MRF) source terms for rotating machinery.
+// Adds Coriolis (-2 omega x v) and centrifugal (-omega x (omega x r)) body forces
+// within a user-defined rotating zone.
+// Adapted from WindTunnel/NavierStokes3D.compute.
+
+#pragma kernel ApplyForces
+#pragma kernel AdvectVelocity
+#pragma kernel DiffuseVelocity
+#pragma kernel VorticityConfinement
+#pragma kernel ComputeDivergence
+#pragma kernel JacobiPressure
+#pragma kernel ProjectVelocity
+#pragma kernel AdvectParticles
+
+RWStructuredBuffer<float3> GridVelocity;
+RWStructuredBuffer<float3> GridVelocityTmp;
+RWStructuredBuffer<float>  GridPressure;
+RWStructuredBuffer<float>  GridPressureTmp;
+RWStructuredBuffer<float>  GridDivergence;
+
+RWStructuredBuffer<float3> ParticlePositions;
+RWStructuredBuffer<float3> ParticleVelocities;
+StructuredBuffer<int>      ObstacleMask;
+StructuredBuffer<float3>   ObstacleVelocity;
+
+int gridSizeX;
+int gridSizeY;
+int gridSizeZ;
+int gridCount;
+int particleCount;
+
+float deltaTime;
+float viscosity;
+float velocityDamping;
+float inletVelocity;
+float turbulenceIntensity;
+float vorticityStrength;
+float3 flowDirection;
+float3 boundsCenter;
+float3 boundsSize;
+float3 cellSize;
+float timeValue;
+
+// MRF-specific uniforms
+float3 rotationAxis;      // normalised rotation axis (world space)
+float  angularVelocity;   // rad/s (positive = CCW when viewed from +axis)
+float3 rotatingZoneCenter;
+float  rotatingZoneRadius; // cells within this radius from rotation axis get MRF terms
+float  rotatingZoneHalfHeight; // axial half-extent of the rotating zone
+
+static const float EPS = 1e-6;
+static const float PI  = 3.14159265;
+
+// ---------- helpers --------------------------------------------------------
+
+float Max3(float3 v) { return max(v.x, max(v.y, v.z)); }
+
+float3 SafeNormalize(float3 v, float3 fallback)
+{
+    float lenSq = dot(v, v);
+    return lenSq > EPS ? v * rsqrt(lenSq) : fallback;
+}
+
+int Flatten(int x, int y, int z)
+{
+    return x + gridSizeX * (y + gridSizeY * z);
+}
+
+int3 ClampCell(int3 c)
+{
+    return int3(
+        clamp(c.x, 0, gridSizeX - 1),
+        clamp(c.y, 0, gridSizeY - 1),
+        clamp(c.z, 0, gridSizeZ - 1));
+}
+
+float3 CellCenterWorld(int3 c)
+{
+    float3 uv = (float3(c) + 0.5) / float3(gridSizeX, gridSizeY, gridSizeZ);
+    return boundsCenter + (uv - 0.5) * boundsSize;
+}
+
+float3 SampleVelocityAtWorld(float3 world)
+{
+    float3 minB = boundsCenter - boundsSize * 0.5;
+    float3 uv = saturate((world - minB) / max(boundsSize, float3(1e-3, 1e-3, 1e-3)));
+
+    float fx = clamp(uv.x * (gridSizeX - 1), 0.0, gridSizeX - 1.001);
+    float fy = clamp(uv.y * (gridSizeY - 1), 0.0, gridSizeY - 1.001);
+    float fz = clamp(uv.z * (gridSizeZ - 1), 0.0, gridSizeZ - 1.001);
+
+    int x0 = (int)floor(fx); int y0 = (int)floor(fy); int z0 = (int)floor(fz);
+    int x1 = min(x0 + 1, gridSizeX - 1);
+    int y1 = min(y0 + 1, gridSizeY - 1);
+    int z1 = min(z0 + 1, gridSizeZ - 1);
+
+    float tx = fx - x0; float ty = fy - y0; float tz = fz - z0;
+
+    float3 v000 = GridVelocity[Flatten(x0, y0, z0)];
+    float3 v100 = GridVelocity[Flatten(x1, y0, z0)];
+    float3 v010 = GridVelocity[Flatten(x0, y1, z0)];
+    float3 v110 = GridVelocity[Flatten(x1, y1, z0)];
+    float3 v001 = GridVelocity[Flatten(x0, y0, z1)];
+    float3 v101 = GridVelocity[Flatten(x1, y0, z1)];
+    float3 v011 = GridVelocity[Flatten(x0, y1, z1)];
+    float3 v111 = GridVelocity[Flatten(x1, y1, z1)];
+
+    float3 va = lerp(lerp(v000, v100, tx), lerp(v010, v110, tx), ty);
+    float3 vb = lerp(lerp(v001, v101, tx), lerp(v011, v111, tx), ty);
+    return lerp(va, vb, tz);
+}
+
+float3 SampleVelocityAtCell(int3 c)
+{
+    int3 cc = ClampCell(c);
+    return GridVelocity[Flatten(cc.x, cc.y, cc.z)];
+}
+
+float3 ComputeCurl(int3 c)
+{
+    float inv2Dx = 1.0 / (2.0 * max(cellSize.x, 1e-3));
+    float inv2Dy = 1.0 / (2.0 * max(cellSize.y, 1e-3));
+    float inv2Dz = 1.0 / (2.0 * max(cellSize.z, 1e-3));
+
+    float3 vxp = SampleVelocityAtCell(c + int3(1, 0, 0));
+    float3 vxm = SampleVelocityAtCell(c + int3(-1, 0, 0));
+    float3 vyp = SampleVelocityAtCell(c + int3(0, 1, 0));
+    float3 vym = SampleVelocityAtCell(c + int3(0, -1, 0));
+    float3 vzp = SampleVelocityAtCell(c + int3(0, 0, 1));
+    float3 vzm = SampleVelocityAtCell(c + int3(0, 0, -1));
+
+    return float3(
+        (vyp.z - vym.z) * inv2Dy - (vzp.y - vzm.y) * inv2Dz,
+        (vzp.x - vzm.x) * inv2Dz - (vxp.z - vxm.z) * inv2Dx,
+        (vxp.y - vxm.y) * inv2Dx - (vyp.x - vym.x) * inv2Dy);
+}
+
+float HashNoise(float3 p)
+{
+    return frac(sin(dot(p, float3(12.9898, 78.233, 37.719))) * 43758.5453);
+}
+
+bool InsideObstacle(float3 p)
+{
+    float3 minB = boundsCenter - boundsSize * 0.5;
+    float3 maxB = boundsCenter + boundsSize * 0.5;
+    if (all(p >= minB) && all(p <= maxB))
+    {
+        float3 uv = saturate((p - minB) / max(boundsSize, float3(1e-3, 1e-3, 1e-3)));
+        int3 cell = int3(
+            min((int)(uv.x * gridSizeX), gridSizeX - 1),
+            min((int)(uv.y * gridSizeY), gridSizeY - 1),
+            min((int)(uv.z * gridSizeZ), gridSizeZ - 1));
+        if (ObstacleMask[Flatten(cell.x, cell.y, cell.z)] != 0)
+            return true;
+    }
+    return false;
+}
+
+int ResolvePrimaryAxis(float3 dir)
+{
+    float3 a = abs(dir);
+    if (a.y >= a.x && a.y >= a.z) return 1;
+    return a.z >= a.x ? 2 : 0;
+}
+
+float GetAxisComponent(float3 value, int axis)
+{
+    return axis == 1 ? value.y : axis == 2 ? value.z : value.x;
+}
+
+float GetAxisCellIndex(int3 cell, int axis)
+{
+    return axis == 1 ? cell.y : axis == 2 ? cell.z : cell.x;
+}
+
+float GetAxisLength(int axis)
+{
+    return axis == 1 ? gridSizeY : axis == 2 ? gridSizeZ : gridSizeX;
+}
+
+float3 BuildTransverseBasis(float3 dir, float noiseA, float noiseB)
+{
+    float3 reference = abs(dir.y) < 0.95 ? float3(0, 1, 0) : float3(1, 0, 0);
+    float3 side = normalize(cross(dir, reference));
+    float3 up = normalize(cross(side, dir));
+    return side * noiseA + up * noiseB;
+}
+
+// ---------- MRF helpers ----------------------------------------------------
+
+// Returns 1.0 if the cell is inside the rotating zone, 0.0 outside,
+// with a smooth blend band at the interface.
+float RotatingZoneInfluence(float3 world)
+{
+    if (rotatingZoneRadius <= EPS || abs(angularVelocity) <= EPS)
+        return 0.0;
+
+    float3 axis = SafeNormalize(rotationAxis, float3(0, 1, 0));
+    float3 rel = world - rotatingZoneCenter;
+    float axial = dot(rel, axis);
+    float3 radialVec = rel - axis * axial;
+    float radialDist = length(radialVec);
+
+    float blendBand = max(Max3(cellSize) * 2.0, rotatingZoneRadius * 0.05);
+
+    float radialFade = saturate((rotatingZoneRadius - radialDist) / blendBand);
+    float axialFade = saturate((rotatingZoneHalfHeight - abs(axial)) / blendBand);
+
+    return radialFade * axialFade;
+}
+
+// Compute MRF body-force source terms in the rotating reference frame.
+// Coriolis: -2 * omega x v_rel
+// Centrifugal: -omega x (omega x r)
+// where omega = angularVelocity * axis, r = position relative to rotation center.
+float3 ComputeMRFForce(float3 world, float3 velocity)
+{
+    float3 omega = SafeNormalize(rotationAxis, float3(0, 1, 0)) * angularVelocity;
+    float3 r = world - rotatingZoneCenter;
+
+    // Coriolis: -2 * omega x v
+    float3 coriolis = -2.0 * cross(omega, velocity);
+
+    // Centrifugal: -omega x (omega x r)
+    float3 centrifugal = -cross(omega, cross(omega, r));
+
+    return coriolis + centrifugal;
+}
+
+// ---------- kernels --------------------------------------------------------
+
+[numthreads(8, 8, 4)]
+void ApplyForces(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= (uint)gridSizeX || id.y >= (uint)gridSizeY || id.z >= (uint)gridSizeZ) return;
+    int3 c = int3(id.xyz);
+    int idx = Flatten(c.x, c.y, c.z);
+
+    float3 v = GridVelocity[idx];
+    float3 world = CellCenterWorld(c);
+    float3 dir = length(flowDirection) > EPS ? normalize(flowDirection) : float3(1, 0, 0);
+
+    if (InsideObstacle(world))
+    {
+        GridVelocity[idx] = ObstacleVelocity[idx];
+        return;
+    }
+
+    int primaryAxis = ResolvePrimaryAxis(dir);
+    bool positiveFlow = GetAxisComponent(dir, primaryAxis) >= 0.0;
+    float axisLength = max(GetAxisLength(primaryAxis), 1.0);
+    float inletCoord = positiveFlow
+        ? GetAxisCellIndex(c, primaryAxis)
+        : (axisLength - 1.0 - GetAxisCellIndex(c, primaryAxis));
+
+    float inletBlend = exp(-3.0 * inletCoord / axisLength);
+    float baseBlend = 0.06 + 0.25 * inletBlend;
+
+    float nA = HashNoise(float3(c) + timeValue) - 0.5;
+    float nB = HashNoise(float3(c.zxy) + (timeValue * 1.37) + 13.7) - 0.5;
+    float3 turb = BuildTransverseBasis(dir, nA, nB)
+                * (turbulenceIntensity * inletVelocity * 0.25);
+    float3 targetV = dir * inletVelocity + turb;
+
+    if (inletCoord <= 1.0)
+    {
+        v = targetV;
+    }
+    else
+    {
+        v = lerp(v, targetV, baseBlend * deltaTime * 60.0);
+    }
+
+    // Apply MRF body forces (Coriolis + centrifugal) within the rotating zone.
+    float mrfInfluence = RotatingZoneInfluence(world);
+    if (mrfInfluence > 0.0)
+    {
+        float3 mrfForce = ComputeMRFForce(world, v);
+        v += mrfForce * deltaTime * mrfInfluence;
+
+        // Add swirl: the rotating zone imparts tangential velocity
+        // proportional to angular velocity and radius.
+        float3 axis = SafeNormalize(rotationAxis, float3(0, 1, 0));
+        float3 rel = world - rotatingZoneCenter;
+        float3 radialVec = rel - axis * dot(rel, axis);
+        float3 tangent = SafeNormalize(cross(axis, radialVec), float3(0, 0, 0));
+        float rDist = length(radialVec);
+        float3 swirlTarget = tangent * (angularVelocity * rDist * 0.45);
+        v = lerp(v, v + swirlTarget, mrfInfluence * 0.35 * deltaTime * 30.0);
+    }
+
+    // Domain wall damping
+    float3 side;
+    {
+        float3 referenceUp = abs(dir.y) < 0.95 ? float3(0, 1, 0) : float3(1, 0, 0);
+        side = SafeNormalize(cross(referenceUp, dir), float3(1, 0, 0));
+    }
+    float3 up;
+    {
+        up = SafeNormalize(cross(dir, side), float3(0, 1, 0));
+    }
+
+    float sideHalfSpan = max(dot(boundsSize * 0.5, abs(side)), 1e-3);
+    float upHalfSpan = max(dot(boundsSize * 0.5, abs(up)), 1e-3);
+    float sideCoord = dot(world - boundsCenter, side);
+    float upCoord = dot(world - boundsCenter, up);
+    float sideClearance = sideHalfSpan - abs(sideCoord);
+    float ceilingClearance = upHalfSpan - abs(upCoord);
+    float wallBand = max(Max3(cellSize) * 2.2, 0.05);
+    float wallInfluence = max(saturate(1.0 - sideClearance / wallBand),
+                              saturate(1.0 - ceilingClearance / wallBand));
+    if (wallInfluence > 0.0)
+    {
+        float forward = dot(v, dir);
+        float3 tangential = dir * max(forward, inletVelocity * 0.45);
+        v = lerp(v, tangential, wallInfluence * 0.65);
+    }
+
+    v *= (1.0 - velocityDamping);
+    GridVelocity[idx] = v;
+}
+
+[numthreads(8, 8, 4)]
+void AdvectVelocity(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= (uint)gridSizeX || id.y >= (uint)gridSizeY || id.z >= (uint)gridSizeZ) return;
+    int3 c = int3(id.xyz);
+    int idx = Flatten(c.x, c.y, c.z);
+
+    float3 world = CellCenterWorld(c);
+    float3 dir = length(flowDirection) > EPS ? normalize(flowDirection) : float3(1, 0, 0);
+
+    if (InsideObstacle(world))
+    {
+        GridVelocityTmp[idx] = ObstacleVelocity[idx];
+        return;
+    }
+
+    float3 v = GridVelocity[idx];
+    float3 backtrace = world - v * deltaTime;
+    float3 advected = SampleVelocityAtWorld(backtrace);
+    float speed = length(v);
+    float preserve = saturate(speed / max(inletVelocity * 0.35, 0.5));
+    advected = lerp(v, advected, 0.72 + preserve * 0.18);
+
+    int primaryAxis = ResolvePrimaryAxis(dir);
+    bool positiveFlow = GetAxisComponent(dir, primaryAxis) >= 0.0;
+    float axisLength = max(GetAxisLength(primaryAxis), 1.0);
+    float inletCoord = positiveFlow
+        ? GetAxisCellIndex(c, primaryAxis)
+        : (axisLength - 1.0 - GetAxisCellIndex(c, primaryAxis));
+    float outletCoord = positiveFlow
+        ? (axisLength - 1.0 - GetAxisCellIndex(c, primaryAxis))
+        : GetAxisCellIndex(c, primaryAxis);
+
+    if (inletCoord <= 1.0)
+    {
+        float nA = HashNoise(float3(c) + timeValue) - 0.5;
+        float nB = HashNoise(float3(c.zxy) + (timeValue * 1.37) + 13.7) - 0.5;
+        float3 turb = BuildTransverseBasis(dir, nA, nB) * (turbulenceIntensity * inletVelocity * 0.20);
+        advected = dir * inletVelocity + turb;
+    }
+    else if (outletCoord <= 1.0)
+    {
+        float3 downstream = dir * max(dot(advected, dir), inletVelocity * 0.40);
+        advected = lerp(advected, downstream, 0.55);
+    }
+
+    GridVelocityTmp[idx] = advected;
+}
+
+[numthreads(8, 8, 4)]
+void DiffuseVelocity(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= (uint)gridSizeX || id.y >= (uint)gridSizeY || id.z >= (uint)gridSizeZ) return;
+    int3 c = int3(id.xyz);
+    int idx = Flatten(c.x, c.y, c.z);
+
+    int3 cxp = ClampCell(c + int3(1, 0, 0));
+    int3 cxm = ClampCell(c + int3(-1, 0, 0));
+    int3 cyp = ClampCell(c + int3(0, 1, 0));
+    int3 cym = ClampCell(c + int3(0, -1, 0));
+    int3 czp = ClampCell(c + int3(0, 0, 1));
+    int3 czm = ClampCell(c + int3(0, 0, -1));
+
+    float3 lap = GridVelocity[Flatten(cxp.x, cxp.y, cxp.z)] +
+                 GridVelocity[Flatten(cxm.x, cxm.y, cxm.z)] +
+                 GridVelocity[Flatten(cyp.x, cyp.y, cyp.z)] +
+                 GridVelocity[Flatten(cym.x, cym.y, cym.z)] +
+                 GridVelocity[Flatten(czp.x, czp.y, czp.z)] +
+                 GridVelocity[Flatten(czm.x, czm.y, czm.z)] -
+                 6.0 * GridVelocity[idx];
+
+    float h = max(min(cellSize.x, min(cellSize.y, cellSize.z)), 1e-3);
+    GridVelocityTmp[idx] = GridVelocity[idx] + viscosity * deltaTime * lap / (h * h);
+}
+
+[numthreads(8, 8, 4)]
+void VorticityConfinement(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= (uint)gridSizeX || id.y >= (uint)gridSizeY || id.z >= (uint)gridSizeZ) return;
+    int3 c = int3(id.xyz);
+    int idx = Flatten(c.x, c.y, c.z);
+
+    float3 world = CellCenterWorld(c);
+    if (InsideObstacle(world))
+    {
+        GridVelocityTmp[idx] = ObstacleVelocity[idx];
+        return;
+    }
+
+    float3 curl = ComputeCurl(c);
+    float curlMag = length(curl);
+    if (curlMag <= 1e-5 || vorticityStrength <= 1e-5)
+    {
+        GridVelocityTmp[idx] = GridVelocity[idx];
+        return;
+    }
+
+    float gradXP = length(ComputeCurl(c + int3(1, 0, 0)));
+    float gradXM = length(ComputeCurl(c + int3(-1, 0, 0)));
+    float gradYP = length(ComputeCurl(c + int3(0, 1, 0)));
+    float gradYM = length(ComputeCurl(c + int3(0, -1, 0)));
+    float gradZP = length(ComputeCurl(c + int3(0, 0, 1)));
+    float gradZM = length(ComputeCurl(c + int3(0, 0, -1)));
+
+    float3 gradCurlMag = float3(
+        (gradXP - gradXM) / (2.0 * max(cellSize.x, 1e-3)),
+        (gradYP - gradYM) / (2.0 * max(cellSize.y, 1e-3)),
+        (gradZP - gradZM) / (2.0 * max(cellSize.z, 1e-3)));
+    float3 normal = SafeNormalize(gradCurlMag, float3(0, 0, 0));
+
+    float confinementScale = vorticityStrength * lerp(0.60, 1.35, saturate(turbulenceIntensity * 1.25));
+    float3 force = cross(normal, curl) * confinementScale;
+    GridVelocityTmp[idx] = GridVelocity[idx] + force * deltaTime;
+}
+
+[numthreads(8, 8, 4)]
+void ComputeDivergence(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= (uint)gridSizeX || id.y >= (uint)gridSizeY || id.z >= (uint)gridSizeZ) return;
+    int3 c = int3(id.xyz);
+    int idx = Flatten(c.x, c.y, c.z);
+
+    int3 cxp = ClampCell(c + int3(1, 0, 0));
+    int3 cxm = ClampCell(c + int3(-1, 0, 0));
+    int3 cyp = ClampCell(c + int3(0, 1, 0));
+    int3 cym = ClampCell(c + int3(0, -1, 0));
+    int3 czp = ClampCell(c + int3(0, 0, 1));
+    int3 czm = ClampCell(c + int3(0, 0, -1));
+
+    float3 vxp = GridVelocity[Flatten(cxp.x, cxp.y, cxp.z)];
+    float3 vxm = GridVelocity[Flatten(cxm.x, cxm.y, cxm.z)];
+    float3 vyp = GridVelocity[Flatten(cyp.x, cyp.y, cyp.z)];
+    float3 vym = GridVelocity[Flatten(cym.x, cym.y, cym.z)];
+    float3 vzp = GridVelocity[Flatten(czp.x, czp.y, czp.z)];
+    float3 vzm = GridVelocity[Flatten(czm.x, czm.y, czm.z)];
+
+    float div = (vxp.x - vxm.x) / (2.0 * max(cellSize.x, 1e-3)) +
+                (vyp.y - vym.y) / (2.0 * max(cellSize.y, 1e-3)) +
+                (vzp.z - vzm.z) / (2.0 * max(cellSize.z, 1e-3));
+    GridDivergence[idx] = div;
+    GridPressure[idx] = 0;
+}
+
+[numthreads(8, 8, 4)]
+void JacobiPressure(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= (uint)gridSizeX || id.y >= (uint)gridSizeY || id.z >= (uint)gridSizeZ) return;
+    int3 c = int3(id.xyz);
+    int idx = Flatten(c.x, c.y, c.z);
+
+    int3 cxp = ClampCell(c + int3(1, 0, 0));
+    int3 cxm = ClampCell(c + int3(-1, 0, 0));
+    int3 cyp = ClampCell(c + int3(0, 1, 0));
+    int3 cym = ClampCell(c + int3(0, -1, 0));
+    int3 czp = ClampCell(c + int3(0, 0, 1));
+    int3 czm = ClampCell(c + int3(0, 0, -1));
+
+    float ps = GridPressure[Flatten(cxp.x, cxp.y, cxp.z)] +
+               GridPressure[Flatten(cxm.x, cxm.y, cxm.z)] +
+               GridPressure[Flatten(cyp.x, cyp.y, cyp.z)] +
+               GridPressure[Flatten(cym.x, cym.y, cym.z)] +
+               GridPressure[Flatten(czp.x, czp.y, czp.z)] +
+               GridPressure[Flatten(czm.x, czm.y, czm.z)];
+
+    float h = max(min(cellSize.x, min(cellSize.y, cellSize.z)), 1e-3);
+    GridPressureTmp[idx] = (ps - GridDivergence[idx] * h * h) / 6.0;
+}
+
+[numthreads(8, 8, 4)]
+void ProjectVelocity(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= (uint)gridSizeX || id.y >= (uint)gridSizeY || id.z >= (uint)gridSizeZ) return;
+    int3 c = int3(id.xyz);
+    int idx = Flatten(c.x, c.y, c.z);
+
+    int3 cxp = ClampCell(c + int3(1, 0, 0));
+    int3 cxm = ClampCell(c + int3(-1, 0, 0));
+    int3 cyp = ClampCell(c + int3(0, 1, 0));
+    int3 cym = ClampCell(c + int3(0, -1, 0));
+    int3 czp = ClampCell(c + int3(0, 0, 1));
+    int3 czm = ClampCell(c + int3(0, 0, -1));
+
+    float gradX = (GridPressure[Flatten(cxp.x, cxp.y, cxp.z)] - GridPressure[Flatten(cxm.x, cxm.y, cxm.z)]) / (2.0 * max(cellSize.x, 1e-3));
+    float gradY = (GridPressure[Flatten(cyp.x, cyp.y, cyp.z)] - GridPressure[Flatten(cym.x, cym.y, cym.z)]) / (2.0 * max(cellSize.y, 1e-3));
+    float gradZ = (GridPressure[Flatten(czp.x, czp.y, czp.z)] - GridPressure[Flatten(czm.x, czm.y, czm.z)]) / (2.0 * max(cellSize.z, 1e-3));
+
+    float3 v = GridVelocity[idx] - float3(gradX, gradY, gradZ);
+    float3 world = CellCenterWorld(c);
+
+    if (InsideObstacle(world))
+    {
+        v = ObstacleVelocity[idx];
+    }
+
+    GridVelocity[idx] = v;
+}
+
+[numthreads(64, 1, 1)]
+void AdvectParticles(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x >= (uint)particleCount) return;
+    float3 pos = ParticlePositions[id.x];
+
+    float3 minB = boundsCenter - boundsSize * 0.5;
+    float3 maxB = boundsCenter + boundsSize * 0.5;
+    float3 uv = (pos - minB) / max(boundsSize, float3(1e-3, 1e-3, 1e-3));
+    uv = clamp(uv, 0.0, 0.9999);
+
+    int3 cell = int3(
+        min((int)(uv.x * gridSizeX), gridSizeX - 1),
+        min((int)(uv.y * gridSizeY), gridSizeY - 1),
+        min((int)(uv.z * gridSizeZ), gridSizeZ - 1));
+    int gIdx = Flatten(cell.x, cell.y, cell.z);
+    float3 vel = GridVelocity[gIdx];
+
+    pos += vel * deltaTime;
+
+    // Recycle at inlet
+    if (pos.x < minB.x || pos.x > maxB.x || pos.y < minB.y || pos.y > maxB.y || pos.z < minB.z || pos.z > maxB.z)
+    {
+        float3 dir = length(flowDirection) > EPS ? normalize(flowDirection) : float3(1, 0, 0);
+        int axis = ResolvePrimaryAxis(dir);
+        bool positiveFlow = GetAxisComponent(dir, axis) >= 0.0;
+        float jA = frac(sin((id.x + 11) * 12.9898) * 43758.5453) * 2.0 - 1.0;
+        float jB = frac(cos((id.x + 29) * 78.233) * 13758.5453) * 2.0 - 1.0;
+        pos = boundsCenter;
+        if (axis == 0)
+        {
+            pos.x = positiveFlow ? minB.x + 0.01 * boundsSize.x : maxB.x - 0.01 * boundsSize.x;
+            pos.y = boundsCenter.y + jA * boundsSize.y * 0.45;
+            pos.z = boundsCenter.z + jB * boundsSize.z * 0.45;
+        }
+        else if (axis == 1)
+        {
+            pos.x = boundsCenter.x + jA * boundsSize.x * 0.45;
+            pos.y = positiveFlow ? minB.y + 0.01 * boundsSize.y : maxB.y - 0.01 * boundsSize.y;
+            pos.z = boundsCenter.z + jB * boundsSize.z * 0.45;
+        }
+        else
+        {
+            pos.x = boundsCenter.x + jA * boundsSize.x * 0.45;
+            pos.y = boundsCenter.y + jB * boundsSize.y * 0.45;
+            pos.z = positiveFlow ? minB.z + 0.01 * boundsSize.z : maxB.z - 0.01 * boundsSize.z;
+        }
+    }
+
+    ParticlePositions[id.x] = pos;
+    ParticleVelocities[id.x] = vel;
+}

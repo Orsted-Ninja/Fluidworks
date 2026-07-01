@@ -1,0 +1,709 @@
+================================================================================
+                     AEROFLOW CFD - COMPREHENSIVE TESTING GUIDE
+================================================================================
+                           Version 1.0 | March 2026
+================================================================================
+
+TABLE OF CONTENTS
+-----------------
+  1. Application Overview
+  2. Getting Started
+  3. Simulation Modes & Templates
+  4. Test Suite: External Aero (Wind Tunnel)
+  5. Test Suite: Internal Flow (Pipe Flow)
+  6. Test Suite: Rotating Machinery
+  7. Test Suite: Free-Surface Flow (Dam Break / SPH)
+  8. CSV Export Verification
+  9. Video Export Verification
+ 10. UI Interaction & Button Wiring Tests
+ 11. Performance & Stability Tests
+ 12. Known Limitations
+ 13. Bug Report Template
+
+================================================================================
+ 1. APPLICATION OVERVIEW
+================================================================================
+
+AeroFlow is a real-time Computational Fluid Dynamics (CFD) application built in
+Unity 6000.x with the Universal Render Pipeline (URP). It provides four core
+simulation modes accessible via the Home tab ribbon:
+
+  - External Aero    : Wind tunnel analysis (Navier-Stokes grid solver)
+  - Internal Flow    : Pipe/duct flow analysis (pressure drop, friction)
+  - Rotating Machinery: Fan/turbine/impeller with MRF rotating zone
+  - Free-Surface Flow: Dam break / sloshing (SPH particle method)
+
+Key outputs: drag/lift coefficients, pressure maps, streamlines, torque,
+efficiency, head loss, splash dynamics, and CSV time-series export.
+
+================================================================================
+ 2. GETTING STARTED
+================================================================================
+
+LAUNCHING:
+  1. Open the project in Unity 6000.3.1f1 or later.
+  2. Open scene: Assets/Scenes/SampleScene.unity (main entry point).
+  3. Enter Play Mode (Ctrl+P or the Play button).
+  4. The application UI loads with Home, Simulation, and View tabs.
+
+LOADING A SIMULATION:
+  1. Click one of the template buttons on the Home tab:
+       - "External Aero"       -> Wind tunnel with model loading
+       - "Internal Flow"       -> Pipe flow simulation
+       - "Rotating Machinery"  -> Fan/turbine with rotation zone
+       - "Free-Surface Flow"   -> Dam break / SPH
+
+  2. Wait for the scene to load (progress bar appears).
+  3. Load a 3D model via the "Load Model" button in the properties panel
+     (supports .obj, .stl, .fbx, .glb, .gltf).
+  4. Click "Play" on the simulation tab or the quick-play button.
+
+================================================================================
+ 3. SIMULATION MODES & TEMPLATES
+================================================================================
+
+Template ID           | Scene Used         | Solver Type
+----------------------|--------------------|---------------------------
+external_aero         | WindTunnelSample   | NavierStokesGridSolver
+internal_flow         | WindTunnelSample   | PipeFlowSimulation3D
+rotating_machinery    | WindTunnelSample   | RotatingMachinerySimulation3D
+free_surface          | Test C (3D)        | Simulation3D (SPH)
+fsi_lite              | WindTunnelSample   | (placeholder)
+playback_validation   | WindTunnelSample   | (placeholder)
+
+Note: Internal Flow and Rotating Machinery share the WindTunnelSample scene
+but dynamically add their own simulation components. The system cleans up
+unused components when switching templates.
+
+================================================================================
+ 4. TEST SUITE: EXTERNAL AERO (WIND TUNNEL)
+================================================================================
+
+PREREQUISITE: Select "External Aero" template, load a 3D model (e.g., the
+default F1 car), click "Reset Wind Tunnel", wait 3-5 seconds.
+
+---- Test 4.1: Baseline Stability ----
+
+Input Values:
+  Wind Speed:          30 m/s
+  Angle of Attack:     0 deg
+  Turbulence:          1%
+  Wind Direction:      Auto
+  Vis Mode:            Effects
+  Streamline Count:    80
+  Time Scale:          1.0
+  Iterations/Frame:    4
+
+Expected Results:
+  - Flow streamlines stay near the model
+  - No full-screen white lines or giant planes
+  - Cd (drag coeff) should be in range 0.2 - 1.5 (depends on model)
+  - Cl (lift coeff) should be in range -2.0 to 2.0
+  - Reynolds number ~10^5 to 10^6 for typical models
+  - Quality Score > 50
+
+Pass Criteria:
+  [x] Streamlines render correctly around the model
+  [x] Metrics panel shows non-zero Cd and Cl values
+  [x] No console errors or NaN values
+
+---- Test 4.2: Visualization Mode Switching ----
+
+Settings: Wind Speed 50, AoA 0, Turbulence 1, Wind Dir Auto
+
+Steps:
+  1. Set Mode to "Effects"      -> verify particles/streamlines
+  2. Set Mode to "Streamlines"  -> verify line rendering
+  3. Set Mode to "Velocity"     -> verify color-mapped slice
+  4. Set Mode to "Pressure"     -> verify pressure contour slice
+  5. Set Mode back to "Effects" -> verify clean switch
+
+Pass Criteria:
+  [x] Each mode replaces the previous cleanly
+  [x] No leftover renderers from previous modes
+  [x] Effects mode works after cycling through all modes
+
+---- Test 4.3: Angle of Attack Response ----
+
+Case A: Wind Speed 50, AoA +12, Turbulence 1, Mode Effects
+Case B: Wind Speed 50, AoA -12, Turbulence 1, Mode Effects
+
+Expected:
+  - Flow pattern differs between Case A and Case B
+  - Lift coefficient changes sign between positive and negative AoA
+  - Side force coefficient responds to yaw
+
+---- Test 4.4: Speed Variation ----
+
+Test at these speeds (all other settings default):
+  Wind Speed 1   -> Very slow, stable, low Re
+  Wind Speed 30  -> Moderate, typical automotive
+  Wind Speed 80  -> High speed, higher Re
+  Wind Speed 150 -> Extreme, edge case
+
+Expected Metric Ranges (approximate, model-dependent):
+  Speed 1:   Re ~1000-5000,     Cd ~0.3-1.0
+  Speed 30:  Re ~100k-500k,     Cd ~0.25-0.8
+  Speed 80:  Re ~500k-2M,       Cd ~0.2-0.6
+  Speed 150: Re ~1M-5M,         Cd ~0.2-0.5
+
+Pass Criteria:
+  [x] Re increases with speed
+  [x] Drag force increases with speed squared (approximately)
+  [x] No NaN or infinity values at any speed
+
+---- Test 4.5: Custom Wind Direction ----
+
+Setting: Wind Direction = Custom
+Custom Direction: (0.87, 0.00, 0.50) -> diagonal crosswind
+
+Expected:
+  - Flow visibly enters from an angle
+  - Side force coefficient becomes non-zero
+  - Yaw moment becomes non-zero
+
+---- Test 4.6: Turbulence Stress Test ----
+
+Test turbulence levels: 1, 10, 25, 40
+
+Expected:
+  - Higher turbulence = more chaotic but still bounded flow
+  - No NaN, no screen-filling artifacts
+  - Quality score may decrease at extreme turbulence
+
+---- Test 4.7: Metrics Validation (Physics Check) ----
+
+For a bluff body at 50 m/s in air (rho=1.225, mu=1.81e-5):
+  - Re = rho * V * L / mu. For L=1m: Re = 1.225 * 50 / 1.81e-5 ~ 3.4M
+  - Drag force = 0.5 * rho * V^2 * A * Cd
+  - For Cd=0.5, A=1.0: F_drag = 0.5 * 1.225 * 2500 * 1.0 * 0.5 = 766 N
+
+Verify that displayed metrics are physically reasonable.
+
+================================================================================
+ 5. TEST SUITE: INTERNAL FLOW (PIPE FLOW)
+================================================================================
+
+PREREQUISITE: Select "Internal Flow" template, load a pipe/duct model
+(optional - works without model too), click Play.
+
+---- Test 5.1: Laminar Pipe Flow ----
+
+Input Values:
+  Pipe Radius:          0.05 m  (50 mm)
+  Pipe Length:          2.0 m
+  Inlet Velocity:       0.5 m/s
+  Fluid Density:        998 kg/m3 (water)
+  Dynamic Viscosity:    1.002e-3 Pa.s (water at 20C)
+  Laminar:              ON (checked)
+  Wall Roughness:       0.0015 m
+  Time Scale:           1.0
+  Iterations/Frame:     4
+
+Expected Results (analytical validation):
+  Pipe Re = rho * V * D / mu = 998 * 0.5 * 0.1 / 0.001 = 49,900
+  NOTE: With Laminar forced ON, solver uses f = 64/Re regardless
+  Friction Factor f = 64 / 49900 = 0.00128
+  Head Loss hL = f * (L/D) * (V^2 / 2g) = 0.00128 * 20 * 0.01274 = 0.000326 m
+  Flow Rate Q = V * pi * r^2 = 0.5 * pi * 0.0025 = 0.00393 m3/s
+  Pressure Gradient = dP/L
+
+Pass Criteria:
+  [x] Friction factor is displayed and > 0
+  [x] Head loss is displayed and > 0
+  [x] Flow rate ~ pi * r^2 * V_mean
+  [x] Reynolds number matches expected order of magnitude
+
+---- Test 5.2: Turbulent Pipe Flow ----
+
+Input Values:
+  Pipe Radius:          0.5 m
+  Pipe Length:          5.0 m
+  Inlet Velocity:       10 m/s
+  Fluid Density:        1.225 kg/m3 (air)
+  Dynamic Viscosity:    1.81e-5 Pa.s (air)
+  Laminar:              OFF
+  Wall Roughness:       0.0015 m
+  Time Scale:           1.0
+  Iterations/Frame:     4
+
+Expected Results:
+  Pipe Re = 1.225 * 10 * 1.0 / 1.81e-5 ~ 676,796
+  This is fully turbulent (Re > 4000)
+  Colebrook-White: e/D = 0.0015, f ~ 0.02-0.03 (typical for rough pipe)
+  Head Loss hL = f * (L/D) * V^2 / 2g ~ f * 5 * 100/19.62 ~ f * 25.5
+
+  For f = 0.025: hL ~ 0.638 m
+  Flow Rate Q = 10 * pi * 0.25 = 7.854 m3/s
+
+Pass Criteria:
+  [x] Friction factor is in range 0.01 - 0.06
+  [x] Reynolds number > 4000 (turbulent regime)
+  [x] Pressure drop is positive
+  [x] Wall shear stress is positive
+  [x] Head loss is reasonable (not NaN or extremely large)
+
+---- Test 5.3: Transition Check ----
+
+Gradually increase inlet velocity from 0.1 to 5 m/s with:
+  Pipe Radius: 0.05m, Density: 1.225, Viscosity: 1.81e-5
+
+Re thresholds:
+  Re < 2300:  Laminar    -> f = 64/Re
+  Re > 4000:  Turbulent  -> f = Colebrook-White
+  2300-4000:  Transition  -> should use turbulent formula
+
+Pass Criteria:
+  [x] Friction factor changes at Re ~ 2300
+  [x] No discontinuity crash at transition
+
+---- Test 5.4: Edge Cases ----
+
+  - Very low velocity (0.01 m/s): should not crash, Re very low
+  - Very high velocity (100 m/s): should remain stable
+  - Very small pipe radius (0.001 m): extreme Re, check for NaN
+  - Zero viscosity: should clamp to minimum, not divide by zero
+
+================================================================================
+ 6. TEST SUITE: ROTATING MACHINERY
+================================================================================
+
+PREREQUISITE: Select "Rotating Machinery" template, optionally load a
+rotor/blade model, click Play.
+
+---- Test 6.1: Basic Fan/Impeller ----
+
+Input Values:
+  RPM:                  1500
+  Rotation Axis:        Y (vertical)
+  Zone Radius:          1.0 m
+  Zone Height:          1.0 m (half-height 0.5)
+  Inlet Velocity:       20 m/s
+  Fluid Density:        1.225 kg/m3
+  Dynamic Viscosity:    1.81e-5 Pa.s
+  Turbulence:           2%
+  Time Scale:           1.0
+  Iterations/Frame:     4
+
+Expected Results:
+  Angular Velocity: 1500 * pi/30 = 157.08 rad/s
+  Machine Re = omega * R^2 / nu_kinematic
+            = 157.08 * 1.0 / (1.81e-5 / 1.225)
+            = 157.08 / 1.478e-5
+            ~ 10,628,000
+
+  Torque: T = dP * Q / omega (should be > 0)
+  Power:  P = T * omega (should be > 0)
+  Efficiency: between 0 and 1 (0-100%)
+  Swirl: positive tangential velocity in rotating zone
+
+Pass Criteria:
+  [x] Angular velocity displays correctly (~157 rad/s)
+  [x] Machine Reynolds number > 0
+  [x] Torque > 0
+  [x] Power > 0
+  [x] Efficiency 0-100%
+  [x] Mean swirl > 0 (indicates rotation effect)
+
+---- Test 6.2: RPM Sweep ----
+
+Test RPM values: 100, 500, 1500, 5000, 10000
+
+Expected behavior:
+  - Angular velocity scales linearly with RPM
+  - Torque generally increases with RPM
+  - Power = Torque * omega increases
+  - Machine Reynolds increases with RPM
+  - Higher RPM may show stronger swirl
+
+Pass Criteria:
+  [x] All metrics respond to RPM changes
+  [x] No NaN at any RPM value
+  [x] Monotonic increase in angular velocity
+
+---- Test 6.3: Rotation Axis Test ----
+
+Run the same settings with Rotation Axis set to:
+  - X axis (horizontal)
+  - Y axis (vertical, default)
+  - Z axis (axial)
+
+Expected:
+  - Flow pattern changes with rotation axis
+  - Swirl direction follows the chosen axis
+  - Diagnostics remain valid
+
+---- Test 6.4: Zone Size Test ----
+
+Test zone radius: 0.1, 0.5, 1.0, 2.0
+Test zone height: 0.2, 0.5, 1.0
+
+Expected:
+  - Larger zone affects more of the flow field
+  - Machine Reynolds changes with R^2
+  - No crashes at extreme zone sizes
+
+---- Test 6.5: Physics Validation ----
+
+For a simple fan at 3000 RPM, R=0.5m, V_inlet=10 m/s, air:
+  omega = 314.16 rad/s
+  Machine Re = 314.16 * 0.25 / (1.478e-5) ~ 5.3M
+
+  Tip speed = omega * R = 157 m/s
+  This is subsonic but high, so expect significant pressure changes.
+
+================================================================================
+ 7. TEST SUITE: FREE-SURFACE FLOW (DAM BREAK / SPH)
+================================================================================
+
+PREREQUISITE: Select "Free-Surface Flow" template, wait for scene load.
+
+---- Test 7.1: Default Dam Break ----
+
+Use default settings (loaded from DamBreakProperties panel):
+  Particle count:       ~5000-10000
+  Gravity:              -9.81 m/s2
+  Fluid density:        1000 kg/m3
+
+Expected Results:
+  - Particles collapse under gravity
+  - Splash height > 0
+  - Kinetic energy increases during collapse, then oscillates
+  - Containment should start at 100% and may decrease
+  - Impact pressure peaks during splash
+
+Pass Criteria:
+  [x] Particles visible and moving
+  [x] Splash height metric updates
+  [x] Kinetic energy metric updates
+  [x] No particles escaping to infinity
+
+---- Test 7.2: Stability Check ----
+
+Let simulation run for 30+ seconds:
+  - Energy should stabilize (not grow unbounded)
+  - Containment should stabilize
+  - No console error spam
+
+---- Test 7.3: Layman Mode Toggle ----
+
+Toggle "Layman Mode" in UI:
+  - Layman ON:  simplified visual with color-coded particles
+  - Layman OFF: standard particle rendering
+
+Pass Criteria:
+  [x] Toggle works without crash
+  [x] Visual mode changes immediately
+
+================================================================================
+ 8. CSV EXPORT VERIFICATION
+================================================================================
+
+HOW TO EXPORT:
+  1. Run any simulation for at least 10 seconds.
+  2. Click "Export CSV" in the Results/Analysis panel.
+  3. Choose a save location.
+
+FILE FORMAT:
+  The CSV should contain 46 columns with a header row.
+
+EXPECTED COLUMNS:
+  SimulationMode, Timestamp, Cd, Cl, Cs, Re, Pressure, Velocity,
+  RefArea, DragForce, VertAeroForce, Downforce,
+  CoPLong, CoPLat, CoPVert,
+  PitchMoment, YawMoment, RollMoment,
+  FrontAxleLoad, RearAxleLoad, EstTopSpeed,
+  LiqKineticEnergy, LiqImpactPressure, LiqSplashHeight,
+  LiqContainment, LiqVelocityRms, LiqStability,
+  NavierValid, NavierMeanVel, NavierMaxVel,
+  NavierPressureDrop, NavierWallShear, NavierDivL1,
+  QualityScore, QualityRating, Assessment,
+  FlowRegime, QualityTips,
+  PipeFrictionFactor, PipeHeadLoss, PipeFlowRate,
+  PipePressureGradient, PipeReynolds,
+  MachineryTorque, MachineryPower, MachineryEfficiency,
+  MachineryAngularVelocity, MachineryMeanSwirl
+
+VALIDATION STEPS:
+  1. Open the CSV in a text editor or spreadsheet.
+  2. Verify the header row has all 46+ columns.
+  3. Verify data rows have matching column count.
+  4. Verify numeric fields are actual numbers (not "NaN" or empty).
+  5. Verify SimulationMode column matches the active mode.
+  6. Verify Timestamp column is monotonically increasing.
+
+PER-MODE CHECKS:
+  External Aero:  Cd, Cl, Re, DragForce should be non-zero
+  Internal Flow:  PipeFrictionFactor, PipeHeadLoss, PipeFlowRate non-zero
+  Rotating Mach:  MachineryTorque, MachineryPower, MachineryEfficiency non-zero
+  Free-Surface:   LiqKineticEnergy, LiqSplashHeight non-zero
+
+================================================================================
+ 9. VIDEO EXPORT VERIFICATION
+================================================================================
+
+HOW TO EXPORT:
+  1. Run any simulation.
+  2. Click "Export Video (MP4)" on the Simulation tab.
+  3. Choose a save location for the .mp4 file.
+  4. Recording starts immediately. Click "Stop Recording" to finish.
+
+BEHAVIOR:
+  - Captures ONLY the simulation camera (excludes UI overlay).
+  - Uses Camera.Render() to a RenderTexture at 1920x1080, 30 FPS.
+  - Maximum duration: 30 seconds (auto-stops).
+  - Frames saved as PNG sequence, then encoded to MP4 via ffmpeg.
+  - PNG frames are deleted after successful encoding.
+
+VALIDATION STEPS:
+  1. Verify the button text changes to "Stop Recording" while recording.
+  2. Verify the button returns to "Export Video (MP4)" after stopping.
+  3. Check that the .mp4 file is created at the chosen location.
+  4. Open the .mp4 and verify:
+     [x] Video shows the simulation (particles, streamlines, etc.)
+     [x] Video does NOT show the UI (ribbon, panels, buttons)
+     [x] Video resolution is 1920x1080
+     [x] Video duration matches recording time
+  5. If ffmpeg is not installed, verify:
+     [x] Warning appears in console: "ffmpeg.exe not found"
+     [x] PNG frames are saved in AppData/.../Captures/ folder
+
+FFMPEG LOCATION SEARCH ORDER:
+  1. ffmpegPathOverride field (if set)
+  2. StreamingAssets/Tools/ffmpeg.exe
+  3. System PATH
+
+================================================================================
+ 10. UI INTERACTION & BUTTON WIRING TESTS
+================================================================================
+
+---- Test 10.1: Ribbon Tab Switching ----
+
+Steps:
+  1. Click "Home" tab    -> Home content visible, others hidden
+  2. Click "Simulation"  -> Simulation content visible, others hidden
+  3. Click "View" tab    -> View content visible, others hidden
+
+Pass Criteria:
+  [x] Active tab is highlighted
+  [x] Only one tab content visible at a time
+  [x] Quick-play controls visible on all tabs
+
+---- Test 10.2: Template Selection ----
+
+On the Home tab, click each template button:
+  1. "External Aero"       -> loads WindTunnelSample, shows wind tunnel panel
+  2. "Internal Flow"       -> loads WindTunnelSample, shows pipe flow panel
+  3. "Rotating Machinery"  -> loads WindTunnelSample, shows machinery panel
+  4. "Free-Surface"        -> loads Test C (3D), shows dam break panel
+  5. "Conjugate / FSI"     -> loads WindTunnelSample, shows template info
+  6. "Playback"            -> loads WindTunnelSample, shows template info
+
+Pass Criteria:
+  [x] Each template loads the correct scene
+  [x] Properties panel shows the correct controls
+  [x] Switching between templates cleans up old components
+  [x] No console errors during template switching
+
+---- Test 10.3: Playback Controls ----
+
+  1. Click Play     -> simulation starts, button shows "Pause"
+  2. Click Pause    -> simulation pauses, button shows "Play"
+  3. Click ">"      -> quick toggle (same as Play/Pause)
+  4. Click "<<"      -> speed decreases (min 0.2x)
+  5. Click ">>"      -> speed increases (max 3.0x)
+  6. Speed label updates to show current speed (e.g., "(1.0x)")
+
+---- Test 10.4: View Controls ----
+
+On the View tab:
+  1. Click "ISO View"    -> camera moves to isometric position
+  2. Click "Front View"  -> camera moves to front
+  3. Click "Top View"    -> camera moves to top-down
+  4. Click "Side View"   -> camera moves to side
+  5. "Standard" render   -> normal shading
+  6. "Wireframe" render  -> wireframe overlay
+  7. "Pressure" render   -> pressure-mapped surface
+
+---- Test 10.5: Properties Panel Tests ----
+
+For each simulation mode, verify the properties panel bindings:
+
+WIND TUNNEL PANEL:
+  [x] Wind Speed slider changes simulation inlet velocity
+  [x] Angle of Attack slider changes flow direction
+  [x] Turbulence slider changes noise intensity
+  [x] Time Scale slider changes solver speed
+  [x] Iterations/Frame slider changes solver quality
+  [x] Vis Mode dropdown switches visualization
+  [x] Streamline Count slider changes line count
+  [x] Reset button reinitializes the solver
+  [x] Load Model button opens file dialog
+
+PIPE FLOW PANEL:
+  [x] Pipe Radius slider updates settings.pipeRadius
+  [x] Pipe Length slider updates settings.pipeLength
+  [x] Inlet Velocity slider updates settings.inletVelocity
+  [x] Density slider updates settings.fluidDensity
+  [x] Viscosity field updates settings.dynamicViscosity
+  [x] Laminar toggle switches friction factor formula
+  [x] Wall Roughness slider updates settings.wallRoughness
+  [x] Diagnostics labels update every ~300ms
+
+ROTATING MACHINERY PANEL:
+  [x] RPM slider updates settings.angularVelocityRPM
+  [x] Rotation Axis dropdown changes settings.rotationAxis
+  [x] Zone Radius slider updates settings.rotatingZoneRadius
+  [x] Zone Height slider updates settings.rotatingZoneHalfHeight
+  [x] Inlet Velocity slider updates settings.inletVelocity
+  [x] Density slider updates settings.fluidDensity
+  [x] Diagnostics labels update every ~300ms
+
+DAM BREAK PANEL:
+  [x] Particle sliders change simulation parameters
+  [x] Gravity settings work
+  [x] Layman mode toggle works
+
+---- Test 10.6: Camera Controls ----
+
+  1. Right-click + drag -> orbit camera
+  2. Middle-click + drag -> pan camera
+  3. Scroll wheel -> zoom in/out
+  4. Camera speed slider on View tab -> changes orbit/pan speed
+
+---- Test 10.7: Close App Button ----
+
+  Click the close button (X) in the ribbon:
+  - In Editor: stops play mode
+  - In Build: quits application
+
+================================================================================
+ 11. PERFORMANCE & STABILITY TESTS
+================================================================================
+
+---- Test 11.1: Long-Running Stability ----
+
+Run each simulation mode for 5+ minutes continuously:
+  [x] No memory leak (check Unity Profiler)
+  [x] Frame rate stays above 15 FPS
+  [x] No console error accumulation
+  [x] Metrics continue to update
+
+---- Test 11.2: Rapid Template Switching ----
+
+Quickly switch between templates 10 times:
+  External Aero -> Internal Flow -> Rotating Machinery -> Free Surface
+  (repeat 2-3 cycles)
+
+  [x] No orphaned simulation components
+  [x] No duplicate simulation components
+  [x] Properties panel shows correct controls
+  [x] Correct simulation runs after each switch
+
+---- Test 11.3: Model Loading Stress ----
+
+  1. Load a model
+  2. Switch template
+  3. Load a different model
+  4. Switch back to original template
+  5. Load original model again
+
+  [x] Models load correctly each time
+  [x] Old model is cleaned up
+  [x] Simulation resets properly with new model
+
+---- Test 11.4: UI Performance ----
+
+Verify that metric labels are cached (not queried every frame):
+  - Open Unity Profiler
+  - Check that MainScreenController.UpdateMetrics() does not call
+    Q<Label>() every frame
+  - CacheMetricLabels() should only run once
+
+================================================================================
+ 12. KNOWN LIMITATIONS
+================================================================================
+
+  - Pipe Flow and Rotating Machinery require compute shader files
+    (PipeFlow3D.compute, RotatingMachinery3D.compute) in the
+    Resources/Compute/ folders. If missing, the solver logs an error
+    and does not run.
+
+  - FSI Lite and Playback/Validation templates are placeholders.
+    They load the wind tunnel scene but do not have dedicated solvers.
+
+  - Video export requires ffmpeg.exe. Without it, only PNG frame
+    sequences are saved.
+
+  - The solver grid resolution is limited by GPU memory. Very high
+    resolutions (128x128x128) may cause performance issues on
+    integrated GPUs.
+
+  - Model loading supports .obj, .stl, .fbx, .glb, .gltf formats.
+    Very large models (>500k triangles) may slow voxelization.
+
+  - CSV export writes all 46+ columns regardless of mode. Columns
+    not relevant to the current mode will show zero values.
+
+================================================================================
+ 13. BUG REPORT TEMPLATE
+================================================================================
+
+Copy and fill this template when reporting issues:
+
+--- Bug Report ---
+Date:
+Build: [Editor / Standalone]
+Unity Version:
+Simulation Mode:
+Template:
+
+Settings Used:
+  [list all relevant slider/field values]
+
+Steps to Reproduce:
+  1.
+  2.
+  3.
+
+Expected Behavior:
+
+Actual Behavior:
+
+Console Errors/Warnings:
+
+Screenshot Attached: [Yes/No]
+
+Additional Notes:
+--- End Report ---
+
+================================================================================
+
+QUICK REFERENCE: PHYSICAL CONSTANTS FOR TESTING
+
+Fluid          | Density (kg/m3) | Viscosity (Pa.s)  | Notes
+---------------|-----------------|-------------------|------------------
+Air (20C)      | 1.225           | 1.81e-5           | Default
+Water (20C)    | 998             | 1.002e-3          | For pipe flow
+SAE 30 Oil     | 880             | 0.29              | High viscosity
+Glycerin       | 1260            | 1.412             | Very high visc.
+
+REYNOLDS NUMBER THRESHOLDS:
+  Re < 2300   : Laminar flow
+  2300 < Re < 4000 : Transitional
+  Re > 4000   : Turbulent
+
+KEY FORMULAS:
+  Re = rho * V * L / mu              (Reynolds number)
+  Cd = Fd / (0.5 * rho * V^2 * A)    (Drag coefficient)
+  Cl = Fl / (0.5 * rho * V^2 * A)    (Lift coefficient)
+  f = 64/Re                          (Laminar friction factor)
+  hL = f * (L/D) * V^2 / (2*g)       (Darcy-Weisbach head loss)
+  Q = V * A                          (Volumetric flow rate)
+  T = dP * Q / omega                 (Torque estimate)
+  P = T * omega                      (Shaft power)
+  Re_machine = omega * R^2 / nu      (Machine Reynolds)
+
+================================================================================
+                          END OF TESTING GUIDE
+================================================================================

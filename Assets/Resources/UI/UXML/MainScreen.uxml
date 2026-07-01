@@ -1,0 +1,22 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="root" style="flex-grow: 1; background-color: transparent;">
+        <!-- Top Ribbon -->
+        <ui:VisualElement name="ribbon-container" style="height: 50px;"/>
+
+        <!-- Main Workspace -->
+        <ui:VisualElement name="workspace" style="flex-grow: 1; flex-direction: row;">
+            <!-- Left Sidebar: Tree -->
+            <ui:VisualElement name="left-sidebar-container" style="width: 250px;"/>
+
+            <!-- Center: Viewport &amp; Console -->
+            <ui:VisualElement name="center-panel" style="flex-grow: 1; flex-direction: column;">
+                <ui:VisualElement name="viewport-container" style="flex-grow: 1;"/>
+                <ui:VisualElement name="console-container" style="height: 200px;"/>
+            </ui:VisualElement>
+
+            <!-- Right Sidebar: Properties -->
+            <ui:VisualElement name="right-sidebar-container" style="width: 300px;"/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
+

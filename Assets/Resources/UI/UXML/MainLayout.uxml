@@ -1,0 +1,236 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <!-- Load the stylesheet -->
+    <ui:Style src="project://database/Assets/Resources/UI/USS/MainStyle.uss" />
+    <ui:Template name="ribbon" src="project://database/Assets/Resources/UI/UXML/Ribbon.uxml" />
+
+    <!-- Root Element -->
+    <ui:VisualElement name="root-container" class="root">
+        <!-- Global Ribbon Menu -->
+        <ui:VisualElement name="ribbon-container" class="ribbon-container">
+            <ui:Instance template="ribbon" />
+        </ui:VisualElement>
+
+        <!-- Main Content Area (Horizontal) -->
+        <ui:VisualElement name="main-content" class="main-content">
+
+            <!-- Left Sidebar -->
+            <ui:VisualElement name="left-sidebar" class="sidebar left">
+                <ui:Label text="Simulation Outline" class="sidebar-header" />
+                <ui:TreeView name="project-tree" focusable="true" />
+            </ui:VisualElement>
+            <ui:VisualElement name="left-resizer" class="resizer-vertical">
+                <ui:VisualElement class="resizer-handle" />
+            </ui:VisualElement>
+
+            <!-- Center Block (Viewport + Console) -->
+            <ui:VisualElement name="center-block" class="center-block">
+                <!-- 3D Viewport Area -->
+                <ui:VisualElement name="viewport" class="viewport">
+                    <!-- This area is transparent to show the 3D scene -->
+
+
+                    <!-- Recording indicator overlay -->
+                    <ui:VisualElement name="recording-indicator" class="recording-indicator" style="display: none;">
+                        <ui:Label text="REC" class="recording-dot" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <ui:VisualElement name="console-resizer" class="resizer-horizontal">
+                    <ui:VisualElement class="resizer-handle" />
+                </ui:VisualElement>
+
+                <!-- Console Output (collapsible) -->
+                <ui:VisualElement name="console" class="console">
+                    <ui:VisualElement class="console-title-bar">
+                        <ui:Label text="Console Log" class="console-title" />
+                        <ui:VisualElement style="flex-grow: 1;" />
+                        <ui:Button name="console-toggle-btn" class="console-toggle-btn" text="-" />
+                    </ui:VisualElement>
+                    <ui:ScrollView name="console-scroll" class="console-scroll">
+                        <!-- Log entries will be added here -->
+                    </ui:ScrollView>
+                    <ui:VisualElement name="console-input-row" class="console-input-row">
+                        <ui:TextField name="console-input" class="console-input" placeholder-text="Type a command (help for list)..." />
+                        <ui:Button name="console-submit-button" class="console-submit-button" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <ui:VisualElement name="right-resizer" class="resizer-vertical">
+                <ui:VisualElement class="resizer-handle" />
+            </ui:VisualElement>
+
+            <!-- Right Sidebar -->
+            <ui:VisualElement name="right-sidebar" class="sidebar right">
+                <ui:Label text="Properties" class="sidebar-header" />
+                <!-- Scrollable container for properties -->
+                <ui:ScrollView name="properties-scroll" class="properties-scroll">
+                    <ui:VisualElement name="properties-container" />
+                </ui:ScrollView>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Bottom Status Bar -->
+        <ui:VisualElement name="status-bar" class="status-bar">
+            <ui:Label name="status-mode-label" text="Ready" class="status-bar-text" />
+            <ui:VisualElement style="flex-grow: 1;" />
+            <ui:Label name="status-fps-label" text="" class="status-bar-text" />
+            <ui:Label name="status-resolution-label" text="" class="status-bar-text" style="margin-left: 12px;" />
+        </ui:VisualElement>
+
+        <ui:Button name="hud-visibility-button" text="Hide HUD [Z]" class="hud-visibility-button" tooltip="Toggle HUD visibility" />
+
+        <!-- Central Load Prompt (Overlay) -->
+        <ui:VisualElement name="load-prompt" class="load-prompt-container">
+            <ui:VisualElement class="load-prompt-panel">
+                <ui:Label name="load-prompt-title-label" text="Import Geometry" class="load-prompt-title" />
+                <ui:Label name="load-prompt-subtitle-label" text="Load a .glb or .obj file to begin your simulation" class="load-prompt-subtitle" />
+                <ui:Button name="load-geometry-btn" text="Browse..." class="load-prompt-button" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Homepage Target (Absolute Overlay) -->
+        <ui:VisualElement name="home-screen" class="home-screen-container">
+            <ui:VisualElement class="home-bg-gradient" />
+            <ui:VisualElement class="home-bg-streaks" />
+
+            <ui:VisualElement class="home-content-split">
+                
+                <!-- NEW LEFT PANEL: Buttons -->
+                <ui:VisualElement class="home-left-panel">
+                    <ui:VisualElement class="home-panel-frame">
+                        <ui:VisualElement class="frame-accent-tl" />
+                        <ui:VisualElement class="frame-accent-br" />
+                        
+                        <ui:VisualElement class="home-scroll-container">
+                            <!-- Project Actions -->
+                            <ui:VisualElement class="home-group" name="home-group-project-actions">
+                                <ui:VisualElement class="home-group-header">
+                                    <ui:Label text="PROJECT ACTIONS" class="home-group-title" />
+                                    <ui:VisualElement class="home-group-underline" />
+                                </ui:VisualElement>
+                                <ui:Button name="home-btn-new-project" class="home-action-btn">
+                                    <ui:VisualElement class="btn-icon icon-new-project" />
+                                    <ui:Label text="New Project" class="btn-text" />
+                                </ui:Button>
+                                <ui:Button name="home-btn-open-project" class="home-action-btn">
+                                    <ui:VisualElement class="btn-icon icon-open-project" />
+                                    <ui:Label text="Open Existing Project" class="btn-text" />
+                                </ui:Button>
+                                <ui:Button name="home-btn-import-file" class="home-action-btn">
+                                    <ui:VisualElement class="btn-icon icon-import-file" />
+                                    <ui:Label text="Import Simulation File" class="btn-text" />
+                                </ui:Button>
+                                <ui:Button name="home-btn-recent-projects" class="home-action-btn">
+                                    <ui:VisualElement class="btn-icon icon-recent-projects" />
+                                    <ui:Label text="Recent Projects" class="btn-text" />
+                                </ui:Button>
+                            </ui:VisualElement>
+
+                            <!-- Simulation Templates -->
+                            <ui:VisualElement class="home-group" name="home-group-simulation-templates" style="padding-bottom: 24px; display: none;">
+                                <ui:VisualElement style="flex-direction: row; justify-content: space-between; align-items: flex-end; margin-bottom: 12px;">
+                                    <ui:VisualElement class="home-group-header" style="margin-bottom: 0;">
+                                        <ui:Label text="SIMULATION TEMPLATES" class="home-group-title" />
+                                        <ui:VisualElement class="home-group-underline" />
+                                    </ui:VisualElement>
+                                    <ui:Button name="home-btn-back-actions" class="home-action-btn" style="background-color: rgba(40, 195, 240, 0.1); border-color: rgba(40, 195, 240, 0.3); margin: 0; padding: 4px 10px; min-height: 24px; align-self: center;">
+                                        <ui:Label text="Back" class="btn-text" style="color: rgb(40, 195, 240); font-size: 10px;" />
+                                    </ui:Button>
+                                </ui:VisualElement>
+                                <ui:Button name="home-btn-wind-tunnel" class="home-action-btn">
+                                    <ui:VisualElement class="btn-icon icon-wind-tunnel" />
+                                    <ui:Label text="Wind Tunnel Simulation" class="btn-text" />
+                                </ui:Button>
+                                <ui:Button name="home-btn-pipe-flow" class="home-action-btn">
+                                    <ui:VisualElement class="btn-icon icon-pipe-flow" />
+                                    <ui:Label text="Pipe Flow Simulation" class="btn-text" />
+                                </ui:Button>
+                                <ui:Button name="home-btn-machinery" class="home-action-btn">
+                                    <ui:VisualElement class="btn-icon icon-machinery" />
+                                    <ui:Label text="Rotatory Mode" class="btn-text" />
+                                </ui:Button>
+                                <ui:Button name="home-btn-dambreak" class="home-action-btn">
+                                    <ui:VisualElement class="btn-icon icon-dambreak" />
+                                    <ui:Label text="Free Surface / Dam Break Prototype" class="btn-text" />
+                                </ui:Button>
+                                <ui:Button name="home-btn-confirm-template" class="home-action-btn" style="background-color: rgba(40, 195, 240, 0.15); border-color: rgba(40, 195, 240, 0.4); margin-top: 24px; display: none;">
+                                    <ui:Label text="Confirm Selection" class="btn-text" style="color: rgb(40, 195, 240); -unity-text-align: middle-center; width: 100%;" />
+                                </ui:Button>
+                            </ui:VisualElement>
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+                <!-- NEW RIGHT PANEL: Brand Showcase -->
+                <ui:VisualElement class="home-right-panel">
+                    <ui:VisualElement class="home-showcase-container">
+                        <ui:VisualElement class="home-showcase-image" />
+                        <ui:VisualElement class="home-showcase-title-img" />
+
+                        
+                        <ui:VisualElement class="home-showcase-accents">
+                            <ui:VisualElement class="accent-dash" />
+                            <ui:VisualElement class="accent-dash" style="width: 24px;" />
+                            <ui:VisualElement class="accent-dash" style="width: 48px;" />
+                        </ui:VisualElement>
+                    </ui:VisualElement>
+                </ui:VisualElement>
+
+            </ui:VisualElement>
+
+            <!-- FOOTER -->
+            <ui:VisualElement class="home-footer-bar">
+                <!-- Left: GPU -->
+                <ui:VisualElement class="home-footer-gpu">
+                    <ui:VisualElement class="gpu-icon-box">
+                        <ui:VisualElement class="gpu-icon-inner icon-gpu" />
+                    </ui:VisualElement>
+                    <ui:VisualElement class="gpu-status-dot" />
+                    <ui:Label text="Navier-Stokes Grid Solver" class="gpu-text-cyan" />
+                    <ui:Label name="home-gpu-hardware-label" text="(GPU Accelerated)" class="gpu-text-green" />
+                </ui:VisualElement>
+
+                <ui:VisualElement style="flex-grow: 1;" />
+
+                <!-- Right: System Options -->
+                <ui:VisualElement class="home-footer-sys">
+                    <ui:Button name="home-btn-marketplace" class="sys-icon-btn tooltip-btn" tooltip="Simulation Marketplace"><ui:VisualElement class="sys-icon icon-marketplace" /></ui:Button>
+                    <ui:Button name="home-btn-settings" class="sys-icon-btn tooltip-btn" tooltip="Settings"><ui:VisualElement class="sys-icon icon-settings" /></ui:Button>
+                    <ui:Button name="home-btn-help" class="sys-icon-btn tooltip-btn" tooltip="Quick Help"><ui:VisualElement class="sys-icon icon-help" /></ui:Button>
+                    <ui:Button name="home-btn-documentation" class="sys-icon-btn tooltip-btn" tooltip="Documentation"><ui:VisualElement class="sys-icon icon-docs" /></ui:Button>
+                    <ui:Button name="home-btn-about" class="sys-icon-btn tooltip-btn" tooltip="About"><ui:VisualElement class="sys-icon icon-about" /></ui:Button>
+                    <ui:Button name="home-btn-exit" class="sys-icon-btn exit-btn tooltip-btn" tooltip="Exit"><ui:VisualElement class="sys-icon-red icon-exit" /></ui:Button>
+                    
+                    <ui:VisualElement class="footer-separator" />
+                    <ui:Label text="FluidWorks v1.0.0" class="footer-version" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+
+            <!-- Exit Dialog Overlay -->
+            <ui:VisualElement name="home-exit-dialog" class="home-exit-dialog" style="display: none;">
+                <ui:Label text="EXIT FLUIDWORKS?" class="home-exit-title" />
+                <ui:Label text="Any unsaved progress will be lost." class="home-exit-subtitle" />
+                <ui:VisualElement style="flex-direction: row; margin-top: 24px; justify-content: space-between; width: 100%;">
+                    <ui:Button name="home-btn-exit-cancel" text="Cancel" class="home-dialog-btn" style="width: 48%; margin-bottom: 0;" />
+                    <ui:Button name="home-btn-exit-confirm" text="Confirm Exit" class="home-btn-exit-danger" style="width: 48%; margin-bottom: 0;" />
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+
+        <!-- Splash Screen Target (Top-Most Overlay) -->
+        <ui:VisualElement name="splash-screen" class="splash-screen-container">
+            <ui:VisualElement class="splash-content">
+                <ui:VisualElement class="splash-logo-symbol" />
+                <ui:Label text="SIMULATION FRAMEWORK" class="splash-subtitle" />
+                
+                <ui:VisualElement class="splash-progress-box">
+                    <ui:Label name="splash-status-label" text="INITIALIZING ENVIRONMENT..." class="splash-status-text" />
+                    <ui:VisualElement class="splash-progress-track">
+                        <ui:VisualElement name="splash-progress-fill" class="splash-progress-fill" style="width: 0%;" />
+                    </ui:VisualElement>
+                </ui:VisualElement>
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

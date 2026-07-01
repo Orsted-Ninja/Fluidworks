@@ -1,0 +1,12 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="console-panel" class="panel">
+        <ui:VisualElement name="console-header" class="panel-header" style="flex-direction: row; justify-content: space-between;">
+            <ui:Label text="Console Output" />
+            <ui:Button name="clear-console-button" text="Clear" />
+        </ui:VisualElement>
+        <ui:ScrollView name="console-scroll-view">
+            <ui:VisualElement name="log-container" />
+        </ui:ScrollView>
+    </ui:VisualElement>
+</ui:UXML>
+

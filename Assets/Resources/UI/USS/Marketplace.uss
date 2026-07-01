@@ -1,0 +1,322 @@
+.marketplace-overlay {
+    position: absolute;
+    left: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(2, 4, 10, 0.95);
+    justify-content: center;
+    align-items: center;
+    z-index: 10000;
+}
+
+.marketplace-modal {
+    width: 1100px;
+    height: 780px;
+    background-color: rgb(10, 15, 25);
+    border-width: 1px;
+    border-color: rgb(40, 195, 240);
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+}
+
+.market-header {
+    height: 64px;
+    background-color: rgb(15, 22, 34);
+    flex-direction: row;
+    align-items: center;
+    padding: 0 24px;
+    border-bottom-width: 1px;
+    border-bottom-color: rgba(80, 120, 155, 0.3);
+}
+
+.market-header-left {
+    flex-direction: row;
+    align-items: center;
+}
+
+.market-logo {
+    width: 24px;
+    height: 24px;
+    -unity-background-scale-mode: scale-to-fit;
+    -unity-background-image-tint-color: rgb(40, 195, 240);
+}
+
+.market-title {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: rgb(40, 195, 240);
+    letter-spacing: 2px;
+    margin-left: 14px;
+}
+
+.market-search-container {
+    margin-left: 40px;
+    width: 340px;
+}
+
+.market-search-field {
+    background-color: rgb(8, 12, 18);
+    border-radius: 6px;
+    border-width: 1px;
+    border-color: rgba(80, 120, 155, 0.3);
+    padding: 2px 0;
+}
+
+.market-search-field .unity-base-text-field__input {
+    background-color: transparent;
+    border-width: 0;
+    color: white;
+    font-size: 12px;
+    padding-left: 10px;
+}
+
+.market-close-btn {
+    width: 38px;
+    height: 38px;
+    font-size: 24px;
+    background-color: transparent;
+    border-width: 0;
+    margin: 0;
+    color: rgba(168, 192, 215, 0.6);
+    transition-duration: 0.1s;
+}
+
+.market-close-btn:hover {
+    color: rgb(245, 90, 115);
+    scale: 1.1;
+}
+
+.market-body {
+    flex-grow: 1;
+    flex-direction: row;
+}
+
+.market-sidebar {
+    width: 220px;
+    background-color: rgb(12, 18, 28);
+    border-right-width: 1px;
+    border-right-color: rgba(80, 120, 155, 0.1);
+    padding: 24px 0;
+}
+
+.sidebar-section-title {
+    font-size: 10px;
+    color: rgba(168, 192, 215, 0.4);
+    margin-left: 24px;
+    margin-bottom: 12px;
+    letter-spacing: 2px;
+}
+
+.sidebar-btn {
+    background-color: transparent;
+    border-width: 0;
+    border-radius: 0;
+    margin: 0;
+    padding: 14px 24px;
+    -unity-text-align: middle-left;
+    font-size: 12px;
+    color: rgba(168, 192, 215, 0.6);
+    transition-duration: 0.1s;
+}
+
+.sidebar-btn:hover {
+    background-color: rgba(40, 195, 240, 0.08);
+    color: rgb(40, 195, 240);
+}
+
+.sidebar-btn--active {
+    background-color: rgba(40, 195, 240, 0.12);
+    color: white;
+    -unity-font-style: bold;
+    border-left-width: 4px;
+    border-left-color: rgb(40, 195, 240);
+}
+
+.sidebar-divider {
+    height: 1px;
+    background-color: rgba(80, 120, 155, 0.1);
+    margin: 20px 24px;
+}
+
+.market-content {
+    flex-grow: 1;
+    position: relative;
+    background-color: rgb(8, 12, 18);
+}
+
+.market-scroll-view {
+    flex-grow: 1;
+}
+
+.market-grid {
+    flex-grow: 1;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding: 30px;
+    justify-content: flex-start;
+}
+
+/* Marketplace Card (TemplateCard.uxml) */
+.template-card {
+    width: 240px;
+    height: 340px;
+    margin: 0 12px 24px 12px;
+    background-color: rgb(15, 22, 34);
+    border-radius: 10px;
+    overflow: hidden;
+    transition-duration: 0.2s;
+    border-width: 1px;
+    border-color: rgba(80, 120, 155, 0.15);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+.template-card:hover {
+    scale: 1.02;
+    border-color: rgb(40, 195, 240);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+}
+
+.card-preview {
+    height: 140px;
+    background-color: #05080c;
+    position: relative;
+    overflow: hidden;
+}
+
+.card-image {
+    width: 100%;
+    height: 100%;
+    -unity-background-scale-mode: scale-and-crop;
+    opacity: 0.8;
+}
+
+.card-badge {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background-color: rgba(40, 195, 240, 0.9);
+    padding: 3px 10px;
+    border-radius: 4px;
+}
+
+.badge-text {
+    font-size: 10px;
+    color: rgb(10, 15, 25);
+    -unity-font-style: bold;
+}
+
+.card-info {
+    padding: 16px;
+    flex-grow: 1;
+}
+
+.card-title {
+    font-size: 14px;
+    -unity-font-style: bold;
+    color: white;
+    margin-bottom: 4px;
+}
+
+.card-author {
+    font-size: 10px;
+    color: rgba(168, 192, 215, 0.5);
+    margin-bottom: 12px;
+}
+
+.card-stats {
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 16px;
+}
+
+.stat-text {
+    font-size: 10px;
+    color: rgba(168, 192, 215, 0.7);
+}
+
+.stat-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 2px;
+    background-color: rgba(80, 120, 155, 0.3);
+    margin: 0 8px;
+}
+
+.card-btn {
+    height: 36px;
+    font-size: 11px;
+    border-radius: 6px;
+    margin: 0;
+    -unity-font-style: bold;
+}
+
+.card-btn--download {
+    background-color: rgba(40, 195, 240, 0.15);
+    border-color: rgb(40, 195, 240);
+    color: rgb(40, 195, 240);
+}
+
+.card-btn--download:hover {
+    background-color: rgb(40, 195, 240);
+    color: rgb(10, 15, 25);
+}
+
+.card-btn--import {
+    background-color: rgba(75, 210, 140, 0.15);
+    border-color: rgb(75, 210, 140);
+    color: rgb(75, 210, 140);
+}
+
+.card-btn--import:hover {
+    background-color: rgb(75, 210, 140);
+    color: rgb(10, 15, 25);
+}
+
+.card-progress {
+    height: 8px;
+    background-color: rgba(0, 0, 0, 0.4);
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 12px;
+    border-width: 1px;
+    border-color: rgba(80, 120, 155, 0.2);
+}
+
+.progress-bar-fill {
+    height: 100%;
+    background-color: rgb(40, 195, 240);
+    transition-duration: 0.1s;
+}
+
+.market-loading {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(12, 18, 28, 0.9);
+    justify-content: center;
+    align-items: center;
+}
+
+.loading-text {
+    font-size: 14px;
+    color: rgb(40, 195, 240);
+    -unity-font-style: bold;
+    letter-spacing: 2px;
+}
+
+.market-footer {
+    height: 44px;
+    background-color: rgb(15, 22, 34);
+    border-top-width: 1px;
+    border-top-color: rgba(80, 120, 155, 0.2);
+    justify-content: center;
+    padding: 0 24px;
+}
+
+.market-footer-info {
+    font-size: 10px;
+    color: rgba(168, 192, 215, 0.4);
+}
+

@@ -1,0 +1,333 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="wind-tunnel-properties-view" style="flex-grow: 1;">
+        <ui:VisualElement name="wt-tab-bar" style="
+            flex-direction: row;
+            margin-bottom: 8px;
+            border-bottom-width: 1px;
+            border-bottom-color: rgba(255,255,255,0.12);
+        ">
+            <ui:Button name="wt-tab-btn-tunnel" text="Wind Tunnel" style="
+                flex-grow: 1;
+                -unity-font-style: bold;
+                font-size: 11px;
+                padding-top: 6px;
+                padding-bottom: 6px;
+                background-color: rgba(80,140,255,0.18);
+                border-bottom-width: 2px;
+                border-bottom-color: rgb(80,140,255);
+            "/>
+            <ui:Button name="wt-tab-btn-model" text="Model" style="
+                flex-grow: 1;
+                font-size: 11px;
+                padding-top: 6px;
+                padding-bottom: 6px;
+                background-color: rgba(0,0,0,0);
+            "/>
+        </ui:VisualElement>
+
+        <ui:VisualElement name="wt-tab-tunnel">
+            <!-- PRESET SECTION -->
+            <ui:Label text="WORKFLOW PRESET" class="wt-section-header" />
+
+            <ui:VisualElement style="flex-direction: row; margin-bottom: 6px;">
+                <ui:Button name="profile-standard-button" text="Standard" class="profile-button profile-button--active" style="flex-grow: 1;"/>
+                <ui:Button name="profile-f1-button" text="F1 Balanced" class="profile-button" style="flex-grow: 1;"/>
+            </ui:VisualElement>
+
+            <ui:Label text="Configure external aero visualization, presets, and model setup here." style="
+                font-size: 10px;
+                white-space: normal;
+                margin-bottom: 8px;
+                color: rgba(255,255,255,0.50);
+            "/>
+
+            <!-- VISUALIZATION SECTION -->
+            <ui:Label text="VISUALIZATION" class="wt-section-header" />
+
+            <ui:DropdownField name="viz-mode-dropdown"
+                              label="Visualization"
+                              choices="Streamlines,Vertical Streamlines,Horizontal Streamlines,Surface Pressure,Surface Friction"
+                              value="Streamlines"
+                              style="margin-bottom: 3px;"/>
+
+            <ui:SliderInt name="streamline-density-slider"
+                          label="Streamline Count"
+                          low-value="40" high-value="280" value="140" show-input-field="true"
+                          style="margin-bottom: 3px;"/>
+
+            <ui:Toggle name="raw-solver-toggle"
+                       label="Use Raw Solver Data"
+                       value="false"
+                       tooltip="Use raw solver samples directly and reduce the fallback shaping used for presentation"
+                       style="margin-bottom: 8px;"/>
+
+            <ui:DropdownField name="graphics-mode-dropdown"
+                              label="Graphics Mode"
+                              choices="Fluid,Off"
+                              value="Fluid"
+                              tooltip="Use the standard fluid visualization path or disable graphics"
+                              style="margin-bottom: 8px;"/>
+
+            <!-- BOUNDARY CONDITIONS SECTION -->
+            <ui:Label text="BOUNDARY CONDITIONS" class="wt-section-header" />
+
+            <ui:Slider name="inlet-velocity-slider"
+                       label="Inlet Velocity (m/s)"
+                       low-value="0" high-value="150" value="50" show-input-field="true"
+                       tooltip="Vehicle-relative inlet speed at the tunnel entry"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="angle-of-attack-slider"
+                       label="Yaw / Crosswind (deg)"
+                       low-value="-20" high-value="20" value="0" show-input-field="true"
+                       tooltip="Crosswind angle relative to tunnel axis"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="turbulence-slider"
+                       label="Inlet Turbulence (%)"
+                       low-value="0" high-value="100" value="1" show-input-field="true"
+                       tooltip="Freestream turbulence level"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:DropdownField name="wind-direction-mode-dropdown"
+                              label="Inlet Direction Mode"
+                              choices="Auto,Custom"
+                              value="Auto"
+                              style="margin-bottom: 3px;"/>
+
+            <ui:DropdownField name="inlet-source-dropdown"
+                              label="Inlet Face"
+                              choices="Auto,Left,Right,Front,Back,Top,Bottom"
+                              value="Auto"
+                              style="margin-bottom: 3px;"/>
+
+            <ui:DropdownField name="flow-axis-dropdown"
+                              label="Tunnel Axis"
+                              choices="X Axis,Y Axis,Z Axis"
+                              value="X Axis"
+                              style="margin-bottom: 3px;"/>
+
+            <ui:VisualElement name="wt-custom-dir-group" style="
+                display: none;
+                margin-left: 8px;
+                margin-bottom: 4px;
+            ">
+                <ui:Label text="Direction vector (auto-normalized)" style="font-size: 10px; margin-bottom: 2px; color: rgba(255,255,255,0.55);"/>
+                <ui:FloatField name="dir-x-field" label="X" value="1" style="margin-bottom: 2px;"/>
+                <ui:FloatField name="dir-y-field" label="Y" value="0" style="margin-bottom: 2px;"/>
+                <ui:FloatField name="dir-z-field" label="Z" value="0" style="margin-bottom: 4px;"/>
+            </ui:VisualElement>
+
+            <ui:FloatField name="outlet-pressure-field"
+                           label="Outlet Static Pressure (Pa)"
+                           value="101325"
+                           tooltip="Reference pressure at the outlet plane"
+                           style="margin-bottom: 3px;"/>
+
+            <ui:Toggle name="vehicle-moving-ground-toggle"
+                       label="Moving Ground Plane"
+                       value="true"
+                       tooltip="Boundary proxy for rolling-road ground motion"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="vehicle-ground-speed-scale-slider"
+                       label="Ground Speed Factor"
+                       low-value="0.0" high-value="1.5" value="1.0" show-input-field="true"
+                       tooltip="Ground speed relative to the inlet velocity"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Toggle name="vehicle-wheel-rotation-toggle"
+                       label="Wheel Rotation Proxies"
+                       value="true"
+                       tooltip="Boundary proxy for rotating wheels"
+                       style="margin-bottom: 8px;"/>
+
+            <ui:Toggle name="vehicle-flip-direction-toggle"
+                       label="Flip Vehicle Direction"
+                       value="true"
+                       tooltip="Rotate the car 180° so its nose faces the inlet by default"
+                       style="margin-bottom: 8px;"/>
+
+            <ui:Label text="INLET / OUTLET PANELS" class="wt-section-header" />
+
+            <ui:Slider name="inlet-panel-width-slider"
+                       label="Inlet Width Scale"
+                       low-value="0.2" high-value="1.2" value="1.0" show-input-field="true"
+                       tooltip="Visual width of the inlet portal panel"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="inlet-panel-height-slider"
+                       label="Inlet Height Scale"
+                       low-value="0.2" high-value="1.2" value="1.0" show-input-field="true"
+                       tooltip="Visual height of the inlet portal panel"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="outlet-panel-width-slider"
+                       label="Outlet Width Scale"
+                       low-value="0.2" high-value="1.2" value="1.0" show-input-field="true"
+                       tooltip="Visual width of the outlet portal panel"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="outlet-panel-height-slider"
+                       label="Outlet Height Scale"
+                       low-value="0.2" high-value="1.2" value="1.0" show-input-field="true"
+                       tooltip="Visual height of the outlet portal panel"
+                       style="margin-bottom: 8px;"/>
+
+            <ui:Label text="FLOOR PLANE" class="wt-section-header" />
+
+            <ui:Slider name="floor-length-scale-slider"
+                       label="Floor Length Scale"
+                       low-value="0.4" high-value="1.2" value="1.0" show-input-field="true"
+                       tooltip="Length of the visible floor/test section relative to the inlet-outlet spacing"
+                       style="margin-bottom: 8px;"/>
+
+            <!-- SOLVER SECTION -->
+            <ui:Label text="SOLVER" class="wt-section-header" />
+
+            <ui:Slider name="timescale-slider"
+                       label="Time Scale"
+                       low-value="0.1" high-value="5.0" value="1.0" show-input-field="true"
+                       tooltip="Simulation speed multiplier"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:SliderInt name="iterations-slider"
+                          label="Iterations / Frame"
+                          low-value="1" high-value="10" value="4" show-input-field="true"
+                          tooltip="Pressure-velocity coupling iterations per frame"
+                          style="margin-bottom: 3px;"/>
+
+        </ui:VisualElement>
+
+        <!-- MODEL TAB -->
+        <ui:VisualElement name="wt-tab-model" style="display: none;">
+            <ui:Label text="GEOMETRY" class="wt-section-header" />
+
+            <ui:Label text="Position the model using viewport controls, then use the sliders below to set vehicle parameters for force estimates." style="
+                font-size: 10px;
+                white-space: normal;
+                margin-bottom: 12px;
+                color: rgba(255,255,255,0.45);
+            "/>
+
+            <ui:Button name="load-model-button" text="Import Model (.glb / .obj)" style="
+                margin-bottom: 8px;
+                padding-top: 9px;
+                padding-bottom: 9px;
+                -unity-font-style: bold;
+                font-size: 11px;
+                background-color: rgba(80,140,255,0.25);
+                border-color: rgba(80,140,255,0.6);
+            "/>
+
+            <!-- DIMENSIONS & WEIGHT -->
+            <ui:Label text="DIMENSIONS &amp; WEIGHT" class="wt-section-header" />
+
+            <ui:Slider name="vehicle-mass-slider"
+                       label="Mass (kg)"
+                       low-value="250" high-value="6000" value="1500" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="vehicle-wheelbase-slider"
+                       label="Wheelbase (m)"
+                       low-value="1.5" high-value="6.0" value="2.6" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="vehicle-cg-height-slider"
+                       label="CG Height (m)"
+                       low-value="0.15" high-value="1.5" value="0.35" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:FloatField name="vehicle-reference-area-field"
+                           label="Frontal Area (m², 0 = auto)"
+                           value="0"
+                           style="margin-bottom: 3px;"/>
+
+            <ui:FloatField name="vehicle-track-width-field"
+                           label="Track Width (m, 0 = auto)"
+                           value="0"
+                           style="margin-bottom: 3px;"/>
+            <ui:Slider name="model-scale-slider"
+                       label="Model Scale"
+                       low-value="0.10" high-value="4.00" value="1.00" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+            <ui:Slider name="model-offset-x-slider"
+                       label="Model Offset X (m)"
+                       low-value="-5.0" high-value="5.0" value="0.0" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+            <ui:Slider name="model-offset-y-slider"
+                       label="Model Offset Y (m)"
+                       low-value="-5.0" high-value="5.0" value="0.0" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+            <ui:Slider name="model-offset-z-slider"
+                       label="Model Offset Z (m)"
+                       low-value="-5.0" high-value="5.0" value="0.0" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <!-- SUSPENSION & ATTITUDE -->
+            <ui:Label text="SUSPENSION" class="wt-section-header" />
+
+            <ui:Slider name="vehicle-ride-height-slider"
+                       label="Ride Height (m)"
+                       low-value="0.0" high-value="0.5" value="0.0" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="vehicle-rake-slider"
+                       label="Rake Angle (deg)"
+                       low-value="-8.0" high-value="8.0" value="0.0" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <!-- WHEELS -->
+            <ui:Label text="WHEELS" class="wt-section-header" />
+
+            <ui:FloatField name="vehicle-wheel-radius-field"
+                           label="Wheel Radius (m, 0 = auto)"
+                           value="0"
+                           style="margin-bottom: 3px;"/>
+
+            <ui:FloatField name="vehicle-wheel-width-field"
+                           label="Wheel Width (m, 0 = auto)"
+                           value="0"
+                           style="margin-bottom: 3px;"/>
+
+            <!-- AERO BALANCE -->
+            <ui:Label text="AERO BALANCE" class="wt-section-header" />
+
+            <ui:Slider name="vehicle-front-weight-slider"
+                       label="Front Weight Bias (%)"
+                       low-value="30" high-value="70" value="55" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="vehicle-front-aero-balance-slider"
+                       label="Front Aero Balance (%)"
+                       low-value="20" high-value="80" value="45" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <!-- POWERTRAIN -->
+            <ui:Label text="POWERTRAIN" class="wt-section-header" />
+
+            <ui:Slider name="vehicle-engine-power-slider"
+                       label="Engine Power (kW)"
+                       low-value="0" high-value="2000" value="180" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="vehicle-drivetrain-efficiency-slider"
+                       label="Drivetrain Efficiency (%)"
+                       low-value="50" high-value="100" value="90" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Slider name="vehicle-rolling-resistance-slider"
+                       label="Tyre Rolling Resistance"
+                       low-value="0.001" high-value="0.080" value="0.015" show-input-field="true"
+                       style="margin-bottom: 3px;"/>
+
+            <ui:Button name="reset-wind-button" text="Reset Simulation" style="
+                padding-top: 9px;
+                padding-bottom: 9px;
+                font-size: 11px;
+                background-color: rgba(255,80,80,0.15);
+                border-color: rgba(255,80,80,0.4);
+            "/>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,7 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements">
+    <ui:VisualElement name="project-tree-panel" class="panel">
+        <ui:Label text="Simulation Outline" class="panel-header" />
+        <ui:TreeView name="project-tree" class="tree-view" />
+    </ui:VisualElement>
+</ui:UXML>
+
