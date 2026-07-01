@@ -85,13 +85,18 @@ It includes:
 
 ## 🏎️ Quick Start
 
-1. Open the project in Unity.
-2. Open a scene such as `Assets/Scenes/WindTunnelSample.unity` or the main launcher scene used by the project.
-3. Press Play.
+### Using the Pre-Compiled Release (Recommended)
+1. Download the latest **Windows Build** ZIP from the [Releases](https://github.com/Orsted-Ninja/Fluidworks/releases) page.
+2. Extract the ZIP file to a folder on your computer.
+3. Double-click the main executable (`Aeroflow.exe`) to launch the application.
 4. Use the Home screen to choose a simulation template.
-5. Load a model if the selected mode supports runtime geometry.
-6. Adjust settings in the Properties panel.
-7. Use the View and Simulation tabs to control playback, visualization, and camera presets.
+5. Load a 3D model if the selected mode supports runtime geometry.
+6. Adjust settings in the Properties panel, and use the View/Simulation tabs to control playback!
+
+### Building from Source (Unity)
+1. Open the project folder in **Unity 6000.3.x**.
+2. Open a scene such as `Assets/Scenes/WindTunnelSample.unity` or the main launcher scene.
+3. Press Play.
 
 ---
 
