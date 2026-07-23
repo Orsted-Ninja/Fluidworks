@@ -50,6 +50,11 @@ public class Simulation3D : MonoBehaviour
     ComputeBuffer spatialIndices;
     ComputeBuffer spatialOffsets;
 
+    // Cache
+    GameObject cachedLoadedModel;
+    Rigidbody cachedLoadedRb;
+    Renderer[] cachedRenderers;
+
     // Kernel IDs
     const int externalForcesKernel = 0;
     const int spatialHashKernel = 1;
@@ -70,20 +75,31 @@ public class Simulation3D : MonoBehaviour
 
     public bool IsPaused => isPaused;
 
+    void UpdateModelCache()
+    {
+        if (cachedLoadedModel == null)
+        {
+            cachedLoadedModel = AeroFlow.Core.RuntimeModelLookup.GetLoadedModel();
+            if (cachedLoadedModel != null)
+            {
+                cachedLoadedRb = cachedLoadedModel.GetComponent<Rigidbody>();
+                cachedRenderers = AeroFlow.Core.RuntimeModelLookup.GetLoadedModelRenderers();
+            }
+        }
+    }
+
     public void Play() 
     { 
         isPaused = false; 
         groundedStillTime = 0f;
+        UpdateModelCache();
         
         // --- Wake Up Rigidbodies to Drop ---
-        GameObject loadedModel = GameObject.Find("LoadedModel");
-        if (loadedModel != null)
+        if (cachedLoadedModel != null && cachedLoadedRb != null)
         {
-            Rigidbody rb = loadedModel.GetComponent<Rigidbody>();
-            if (rb != null)
-            {
-                Renderer[] renderers = loadedModel.GetComponentsInChildren<Renderer>();
-                if (renderers != null && renderers.Length > 0)
+            Rigidbody rb = cachedLoadedRb;
+            Renderer[] renderers = cachedRenderers;
+            if (renderers != null && renderers.Length > 0)
                 {
                     Bounds modelBounds = renderers[0].bounds;
                     for (int i = 1; i < renderers.Length; i++) modelBounds.Encapsulate(renderers[i].bounds);
@@ -95,7 +111,7 @@ public class Simulation3D : MonoBehaviour
                     if (maxModelDim > maxTankDim && maxModelDim > 1e-5f)
                     {
                         float fitScale = maxTankDim / maxModelDim;
-                        loadedModel.transform.localScale *= fitScale;
+                        cachedLoadedModel.transform.localScale *= fitScale;
                         modelBounds = renderers[0].bounds;
                         for (int i = 1; i < renderers.Length; i++) modelBounds.Encapsulate(renderers[i].bounds);
                     }
@@ -118,7 +134,6 @@ public class Simulation3D : MonoBehaviour
                 rb.angularDamping = 0.4f;
                 rb.detectCollisions = true;
                 rb.WakeUp();
-            }
         }
     }
     
@@ -126,12 +141,12 @@ public class Simulation3D : MonoBehaviour
     { 
         isPaused = true; 
         groundedStillTime = 0f;
+        UpdateModelCache();
         
         // --- Sleep Rigidbodies ---
-        GameObject loadedModel = GameObject.Find("LoadedModel");
-        if (loadedModel != null)
+        if (cachedLoadedModel != null && cachedLoadedRb != null)
         {
-            Rigidbody rb = loadedModel.GetComponent<Rigidbody>();
+            Rigidbody rb = cachedLoadedRb;
             if (rb != null)
             {
                 if (!rb.isKinematic)
@@ -234,7 +249,7 @@ public class Simulation3D : MonoBehaviour
         ComputeHelper.SetBuffer(compute, densityBuffer, "Densities", densityKernel, pressureKernel, viscosityKernel);
         ComputeHelper.SetBuffer(compute, velocityBuffer, "Velocities", externalForcesKernel, pressureKernel, viscosityKernel, updatePositionsKernel);
 
-        gpuSort = new GPUSort();
+        if (gpuSort == null) gpuSort = new GPUSort();
         gpuSort.SetBuffers(spatialIndices, spatialOffsets);
 
         if (display != null) display.Init(this);
@@ -269,6 +284,7 @@ public class Simulation3D : MonoBehaviour
         }
 
         HandleInput();
+        UpdateModelCache();
         ConstrainLoadedModelToTank();
     }
 
@@ -302,12 +318,9 @@ public class Simulation3D : MonoBehaviour
 
     void ConstrainLoadedModelToTank()
     {
-        GameObject loadedModel = GameObject.Find("LoadedModel");
-        if (loadedModel == null) return;
-        Rigidbody rb = loadedModel.GetComponent<Rigidbody>();
-        if (rb == null || rb.isKinematic) return;
-
-        Renderer[] renderers = loadedModel.GetComponentsInChildren<Renderer>();
+        if (cachedLoadedModel == null || cachedLoadedRb == null || cachedLoadedRb.isKinematic) return;
+        Rigidbody rb = cachedLoadedRb;
+        Renderer[] renderers = cachedRenderers;
         if (renderers == null || renderers.Length == 0) return;
 
         Bounds modelBounds = renderers[0].bounds;
@@ -422,12 +435,11 @@ public class Simulation3D : MonoBehaviour
         compute.SetMatrix("worldToLocal", transform.worldToLocalMatrix);
 
         // --- Bounding Box Obstacle for Imported Models ---
-        GameObject loadedModel = GameObject.Find("LoadedModel");
-        if (loadedModel != null)
+        if (cachedLoadedModel != null)
         {
             Bounds b = new Bounds();
-            Renderer[] renderers = loadedModel.GetComponentsInChildren<Renderer>();
-            if (renderers.Length > 0)
+            Renderer[] renderers = cachedRenderers;
+            if (renderers != null && renderers.Length > 0)
             {
                 b = renderers[0].bounds;
                 for (int i = 1; i < renderers.Length; i++) b.Encapsulate(renderers[i].bounds);

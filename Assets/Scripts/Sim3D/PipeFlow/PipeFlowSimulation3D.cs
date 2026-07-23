@@ -71,9 +71,13 @@ namespace AeroFlow.Sim3D.PipeFlow
 
         bool isPaused = true;
         bool isInitialized;
+        bool isReadbackPending;
         float currentStepTime = 1f / 60f;
         PipeFlowDiagnostics diagnostics;
         float nextDiagnosticsTime;
+
+        private string lastVisualizationMode = "";
+        private float nextBoundaryCheckTime = 0f;
 
         ComputeShader pipeShader;
         ComputeBuffer gridVelocity, gridVelocityTmp;
@@ -114,7 +118,13 @@ namespace AeroFlow.Sim3D.PipeFlow
         public bool HasValidBoundaryAssignments()
         {
             if (boundaryManager == null)
-                boundaryManager = FindAnyObjectByType<BoundaryConditionManager>();
+            {
+                if (Time.time > nextBoundaryCheckTime)
+                {
+                    boundaryManager = FindAnyObjectByType<BoundaryConditionManager>();
+                    nextBoundaryCheckTime = Time.time + 1f;
+                }
+            }
             return boundaryManager != null && boundaryManager.HasValidFlowAssignments();
         }
 
@@ -154,20 +164,11 @@ namespace AeroFlow.Sim3D.PipeFlow
 
         public Bounds GetDomainBounds()
         {
-            // Domain = loaded model bounding box + padding
-            var modelRoot = GetLoadedModelRoot();
-            if (modelRoot != null)
+            if (RuntimeModelLookup.TryGetRenderableBounds(out Bounds b))
             {
-                var renderers = modelRoot.GetComponentsInChildren<Renderer>(true);
-                if (renderers.Length > 0)
-                {
-                    Bounds b = renderers[0].bounds;
-                    for (int i = 1; i < renderers.Length; i++)
-                        b.Encapsulate(renderers[i].bounds);
-                    // Add 15% padding so openings at mesh boundaries are inside the domain
-                    b.Expand(b.size * 0.15f);
-                    return b;
-                }
+                // Add 15% padding so openings at mesh boundaries are inside the domain
+                b.Expand(b.size * 0.15f);
+                return b;
             }
 
             Vector3 size = transform.localScale;
@@ -187,10 +188,13 @@ namespace AeroFlow.Sim3D.PipeFlow
         void Update()
         {
             if (!isInitialized) return;
-            if (!isPaused && !string.Equals(NormalizeVisualizationMode(settings.visualizationMode), VisualizationStreamlines, StringComparison.OrdinalIgnoreCase))
+
+            string currentMode = NormalizeVisualizationMode(settings.visualizationMode);
+            if (currentMode != lastVisualizationMode)
             {
-                EnsureSurfaceVisualizers();
+                ApplyVisualizationState();
             }
+
             if (!isPaused && Time.frameCount > 10)
             {
                 RunSimulationFrame(Time.deltaTime);
@@ -625,7 +629,7 @@ namespace AeroFlow.Sim3D.PipeFlow
 
         void UpdateDiagnostics()
         {
-            if (gridVelocity == null || gridPressure == null || gridDivergence == null) return;
+            if (gridVelocity == null || gridPressure == null || gridDivergence == null || isReadbackPending) return;
             int gridCount = gridSizeX * gridSizeY * gridSizeZ;
             if (gridCount <= 0) return;
 
@@ -636,10 +640,36 @@ namespace AeroFlow.Sim3D.PipeFlow
             if (diagnosticsDivergenceCache == null || diagnosticsDivergenceCache.Length != gridCount)
                 diagnosticsDivergenceCache = new float[gridCount];
 
-            gridVelocity.GetData(diagnosticsVelocityCache);
-            gridPressure.GetData(diagnosticsPressureCache);
-            gridDivergence.GetData(diagnosticsDivergenceCache);
+            isReadbackPending = true;
 
+            AsyncGPUReadback.Request(gridVelocity, (reqVel) =>
+            {
+                if (this == null || !Application.isPlaying) return;
+                if (reqVel.hasError) { isReadbackPending = false; return; }
+
+                AsyncGPUReadback.Request(gridPressure, (reqPres) =>
+                {
+                    if (this == null || !Application.isPlaying) return;
+                    if (reqPres.hasError) { isReadbackPending = false; return; }
+
+                    AsyncGPUReadback.Request(gridDivergence, (reqDiv) =>
+                    {
+                        if (this == null || !Application.isPlaying) return;
+                        if (reqDiv.hasError) { isReadbackPending = false; return; }
+
+                        reqVel.GetData<Vector3>().CopyTo(diagnosticsVelocityCache);
+                        reqPres.GetData<float>().CopyTo(diagnosticsPressureCache);
+                        reqDiv.GetData<float>().CopyTo(diagnosticsDivergenceCache);
+
+                        ComputeDiagnosticsFromCache(gridCount);
+                        isReadbackPending = false;
+                    });
+                });
+            });
+        }
+
+        void ComputeDiagnosticsFromCache(int gridCount)
+        {
             float sumSpeed = 0f, maxSpeed = 0f, sumAbsDiv = 0f;
             int fluidCellCount = 0;
 
@@ -992,6 +1022,9 @@ namespace AeroFlow.Sim3D.PipeFlow
         private void ApplyVisualizationState()
         {
             string normalized = NormalizeVisualizationMode(settings.visualizationMode);
+            if (normalized == lastVisualizationMode) return;
+            lastVisualizationMode = normalized;
+
             bool surfaceMode = string.Equals(normalized, VisualizationSurfacePressure, StringComparison.OrdinalIgnoreCase)
                 || string.Equals(normalized, VisualizationSurfaceFriction, StringComparison.OrdinalIgnoreCase);
 

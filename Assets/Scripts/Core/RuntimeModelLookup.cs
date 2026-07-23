@@ -4,19 +4,43 @@ namespace AeroFlow.Core
 {
     public static class RuntimeModelLookup
     {
+        private static RuntimeModelLoader cachedLoader;
+        private static GameObject cachedModel;
+        private static Renderer[] cachedRenderers;
+
+        public static void ClearCache()
+        {
+            cachedModel = null;
+            cachedRenderers = null;
+        }
+
         public static GameObject GetLoadedModel()
         {
-            var loader = Object.FindFirstObjectByType<RuntimeModelLoader>();
-            if (loader != null)
+            if (cachedModel != null) return cachedModel;
+
+            if (cachedLoader == null)
+                cachedLoader = Object.FindFirstObjectByType<RuntimeModelLoader>();
+
+            if (cachedLoader != null)
             {
-                GameObject instance = loader.GetLoadedModelInstance();
-                if (instance != null)
-                {
-                    return instance;
-                }
+                cachedModel = cachedLoader.GetLoadedModelInstance();
+                if (cachedModel != null)
+                    return cachedModel;
             }
 
-            return GameObject.Find("LoadedModel");
+            cachedModel = GameObject.Find("LoadedModel");
+            return cachedModel;
+        }
+
+        public static Renderer[] GetLoadedModelRenderers()
+        {
+            GameObject model = GetLoadedModel();
+            if (model == null) return null;
+            if (cachedRenderers == null || cachedRenderers.Length == 0 || cachedRenderers[0] == null)
+            {
+                cachedRenderers = model.GetComponentsInChildren<Renderer>(true);
+            }
+            return cachedRenderers;
         }
 
         public static bool TryGetRenderableBounds(out Bounds bounds)
@@ -28,7 +52,12 @@ namespace AeroFlow.Core
                 return false;
             }
 
-            Renderer[] renderers = loadedModel.GetComponentsInChildren<Renderer>(true);
+            if (cachedRenderers == null || cachedRenderers.Length == 0 || cachedRenderers[0] == null)
+            {
+                cachedRenderers = loadedModel.GetComponentsInChildren<Renderer>(true);
+            }
+
+            Renderer[] renderers = cachedRenderers;
             bool initialized = false;
             for (int i = 0; i < renderers.Length; i++)
             {

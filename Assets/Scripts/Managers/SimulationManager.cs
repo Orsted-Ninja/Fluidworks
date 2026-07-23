@@ -639,6 +639,14 @@ namespace AeroFlow.Managers
             }
         }
 
+        public void SetSimulationTimeScale(float timeScale)
+        {
+            if (cachedDam != null) cachedDam.settings.timeScale = timeScale;
+            if (cachedWind != null) cachedWind.settings.timeScale = timeScale;
+            if (cachedPipe != null) cachedPipe.settings.timeScale = timeScale;
+            if (cachedMachinery != null) cachedMachinery.settings.timeScale = timeScale;
+        }
+
         public void ExportResultsToCsv(string path)
         {
             if (string.IsNullOrEmpty(path)) return;

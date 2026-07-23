@@ -107,6 +107,11 @@ public class WindTunnelSimulation3D : MonoBehaviour
     public const int MaxStreamlineDensity = 280;
     public const int DefaultStreamlineDensity = 140;
     public bool showInstancedParticles { get; set; }
+    private AeroFlow.Core.RuntimeModelLoader cachedLoader;
+    private AeroFlow.Core.PartRegistry cachedPartRegistry;
+    private Transform cachedPartRegistryRoot;
+    private Bounds cachedModelBounds;
+    private Transform cachedModelRoot;
     public WindTunnelSettings settings = new WindTunnelSettings();
     [Header("Flow Alignment")]
     public WindTunnelFlowAxis flowAxis = WindTunnelFlowAxis.LocalZ;
@@ -483,31 +488,51 @@ public class WindTunnelSimulation3D : MonoBehaviour
     {
         center = Vector3.zero;
         size = Vector3.zero;
-        var loader = FindAnyObjectByType<AeroFlow.Core.RuntimeModelLoader>();
-        if (loader != null && loader.TryGetSimulationBounds(out var simulationBounds))
+
+        if (cachedLoader == null)
+            cachedLoader = FindAnyObjectByType<AeroFlow.Core.RuntimeModelLoader>();
+        
+        if (cachedLoader != null && cachedLoader.TryGetSimulationBounds(out var simulationBounds))
         {
             center = simulationBounds.center;
             size = simulationBounds.size;
             return;
         }
-        var partRegistry = FindAnyObjectByType<AeroFlow.Core.PartRegistry>();
-        if (partRegistry != null && partRegistry.TryGetCombinedBounds(out var partBounds))
+
+        Transform root = GetLoadedModelRoot();
+        if (root != cachedPartRegistryRoot)
+        {
+            cachedPartRegistryRoot = root;
+            cachedPartRegistry = root != null ? root.GetComponent<AeroFlow.Core.PartRegistry>() : null;
+        }
+
+        if (cachedPartRegistry != null && cachedPartRegistry.TryGetCombinedBounds(out var partBounds))
         {
             center = partBounds.center;
             size = partBounds.size;
             return;
         }
+
         GameObject loadedModel = AeroFlow.Core.RuntimeModelLookup.GetLoadedModel();
         if (loadedModel == null) return;
-        var renderers = loadedModel.GetComponentsInChildren<Renderer>();
-        if (renderers.Length == 0) return;
-        Bounds b = renderers[0].bounds;
-        for (int i = 1; i < renderers.Length; i++)
+
+        // Use RuntimeModelLookup cached renderers instead of GetComponentsInChildren
+        var renderers = AeroFlow.Core.RuntimeModelLookup.GetLoadedModelRenderers();
+        if (renderers == null || renderers.Length == 0) return;
+
+        if (cachedModelRoot != loadedModel.transform)
         {
-            b.Encapsulate(renderers[i].bounds);
+            cachedModelRoot = loadedModel.transform;
+            Bounds b = renderers[0].bounds;
+            for (int i = 1; i < renderers.Length; i++)
+            {
+                if (renderers[i] != null) b.Encapsulate(renderers[i].bounds);
+            }
+            cachedModelBounds = b;
         }
-        center = b.center;
-        size = b.size;
+
+        center = cachedModelBounds.center;
+        size = cachedModelBounds.size;
     }
 
     public bool TryGetLoadedModelBounds(out Bounds bounds)
@@ -525,13 +550,16 @@ public class WindTunnelSimulation3D : MonoBehaviour
 
     Transform GetLoadedModelRoot()
     {
-        var loader = FindAnyObjectByType<AeroFlow.Core.RuntimeModelLoader>();
-        if (loader != null && loader.CurrentSimulationGeometryRoot != null)
+        if (cachedLoader == null)
+            cachedLoader = FindAnyObjectByType<AeroFlow.Core.RuntimeModelLoader>();
+
+        if (cachedLoader != null && cachedLoader.CurrentSimulationGeometryRoot != null)
         {
-            return loader.CurrentSimulationGeometryRoot;
+            return cachedLoader.CurrentSimulationGeometryRoot;
         }
-        var partRegistry = FindAnyObjectByType<AeroFlow.Core.PartRegistry>();
-        if (partRegistry != null) return partRegistry.transform;
+
+        if (cachedPartRegistry != null) return cachedPartRegistry.transform;
+        
         GameObject loadedModel = AeroFlow.Core.RuntimeModelLookup.GetLoadedModel();
         return loadedModel != null ? loadedModel.transform : null;
     }

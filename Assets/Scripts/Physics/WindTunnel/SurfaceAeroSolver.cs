@@ -57,6 +57,13 @@ namespace AeroFlow.Physics
         private readonly Dictionary<int, RendererSurfaceData> surfaceDataByRendererId = new Dictionary<int, RendererSurfaceData>(64);
         private readonly List<MeshRenderer> visibleRenderers = new List<MeshRenderer>(128);
 
+        private static readonly List<Vector3> _sharedVertices = new List<Vector3>(65535);
+        private static readonly List<Vector3> _sharedNormals = new List<Vector3>(65535);
+        private static readonly List<int> _sharedIndices = new List<int>(65535);
+        private static Vector3[] _sharedSampledVelocities = new Vector3[65535];
+        private static Vector3[] _sharedWorldVertices = new Vector3[65535];
+        private static Vector3[] _sharedWorldNormals = new Vector3[65535];
+
         private WindTunnelSimulation3D wind;
         private NavierStokesGridSolver navier;
         private bool subscribed;
@@ -226,14 +233,16 @@ namespace AeroFlow.Physics
                 ? vehicleFrame.centerOfGravity
                 : renderBounds.center;
 
-            surfaceDataByRendererId.Clear();
-
             Vector3 totalPressureForce = Vector3.zero;
             Vector3 totalFrictionForce = Vector3.zero;
             Vector3 totalMoment = Vector3.zero;
             float pressureAreaWeighted = 0f;
             float shearAreaWeighted = 0f;
             float totalArea = 0f;
+
+            // Cache old data to avoid reallocating
+            Dictionary<int, RendererSurfaceData> oldData = new Dictionary<int, RendererSurfaceData>(surfaceDataByRendererId);
+            surfaceDataByRendererId.Clear();
 
             for (int rendererIndex = 0; rendererIndex < visibleRenderers.Count; rendererIndex++)
             {
@@ -243,29 +252,48 @@ namespace AeroFlow.Physics
                 if (meshFilter == null || meshFilter.sharedMesh == null) continue;
 
                 Mesh mesh = meshFilter.sharedMesh;
-                Vector3[] vertices = mesh.vertices;
-                Vector3[] normals = mesh.normals;
-                if (vertices == null || normals == null || vertices.Length == 0 || normals.Length != vertices.Length)
+                mesh.GetVertices(_sharedVertices);
+                mesh.GetNormals(_sharedNormals);
+                if (_sharedVertices.Count == 0 || _sharedNormals.Count != _sharedVertices.Count)
                 {
                     continue;
                 }
 
+                int vCount = _sharedVertices.Count;
+                if (_sharedSampledVelocities.Length < vCount)
+                {
+                    _sharedSampledVelocities = new Vector3[vCount * 2];
+                    _sharedWorldVertices = new Vector3[vCount * 2];
+                    _sharedWorldNormals = new Vector3[vCount * 2];
+                }
+
                 Matrix4x4 localToWorld = renderer.transform.localToWorldMatrix;
-                float[] pressureValues = new float[vertices.Length];
-                float[] frictionValues = new float[vertices.Length];
-                Vector3[] sampledVelocities = new Vector3[vertices.Length];
-                Vector3[] worldVertices = new Vector3[vertices.Length];
-                Vector3[] worldNormals = new Vector3[vertices.Length];
+                
+                RendererSurfaceData surfData;
+                if (!oldData.TryGetValue(renderer.GetInstanceID(), out surfData) || surfData.pressureValues == null || surfData.pressureValues.Length != vCount)
+                {
+                    surfData = new RendererSurfaceData
+                    {
+                        pressureValues = new float[vCount],
+                        frictionValues = new float[vCount]
+                    };
+                }
+
+                float[] pressureValues = surfData.pressureValues;
+                float[] frictionValues = surfData.frictionValues;
+                Vector3[] sampledVelocities = _sharedSampledVelocities;
+                Vector3[] worldVertices = _sharedWorldVertices;
+                Vector3[] worldNormals = _sharedWorldNormals;
 
                 float pressureMin = float.PositiveInfinity;
                 float pressureMax = float.NegativeInfinity;
                 float frictionMin = float.PositiveInfinity;
                 float frictionMax = float.NegativeInfinity;
 
-                for (int i = 0; i < vertices.Length; i++)
+                for (int i = 0; i < vCount; i++)
                 {
-                    Vector3 worldPos = localToWorld.MultiplyPoint3x4(vertices[i]);
-                    Vector3 worldNormal = localToWorld.MultiplyVector(normals[i]).normalized;
+                    Vector3 worldPos = localToWorld.MultiplyPoint3x4(_sharedVertices[i]);
+                    Vector3 worldNormal = localToWorld.MultiplyVector(_sharedNormals[i]).normalized;
                     if (worldNormal.sqrMagnitude < 1e-6f)
                     {
                         worldNormal = Vector3.up;
@@ -328,18 +356,18 @@ namespace AeroFlow.Physics
                         continue;
                     }
 
-                    int[] triangles = mesh.GetIndices(subMesh);
-                    if (triangles == null || triangles.Length < 3)
+                    mesh.GetIndices(_sharedIndices, subMesh);
+                    if (_sharedIndices.Count < 3)
                     {
                         continue;
                     }
 
-                    for (int tri = 0; tri < triangles.Length; tri += 3)
+                    for (int tri = 0; tri < _sharedIndices.Count; tri += 3)
                     {
-                        int ia = triangles[tri];
-                        int ib = triangles[tri + 1];
-                        int ic = triangles[tri + 2];
-                        if (ia < 0 || ib < 0 || ic < 0 || ia >= vertices.Length || ib >= vertices.Length || ic >= vertices.Length)
+                        int ia = _sharedIndices[tri];
+                        int ib = _sharedIndices[tri + 1];
+                        int ic = _sharedIndices[tri + 2];
+                        if (ia < 0 || ib < 0 || ic < 0 || ia >= vCount || ib >= vCount || ic >= vCount)
                         {
                             continue;
                         }
@@ -387,15 +415,12 @@ namespace AeroFlow.Physics
                     }
                 }
 
-                surfaceDataByRendererId[renderer.GetInstanceID()] = new RendererSurfaceData
-                {
-                    pressureValues = pressureValues,
-                    frictionValues = frictionValues,
-                    pressureMin = pressureMin,
-                    pressureMax = pressureMax,
-                    frictionMin = frictionMin,
-                    frictionMax = frictionMax
-                };
+                surfData.pressureMin = pressureMin;
+                surfData.pressureMax = pressureMax;
+                surfData.frictionMin = frictionMin;
+                surfData.frictionMax = frictionMax;
+
+                surfaceDataByRendererId[renderer.GetInstanceID()] = surfData;
             }
 
             Vector3 totalCombinedForce = totalPressureForce + totalFrictionForce;

@@ -35,6 +35,10 @@ namespace AeroFlow.Physics
         private static readonly List<MeshFilter> MeshFilterCache = new List<MeshFilter>(128);
         private static readonly List<SkinnedMeshRenderer> SkinnedRendererCache = new List<SkinnedMeshRenderer>(32);
 
+        private static readonly List<Vector3> _sharedVertices = new List<Vector3>(65535);
+        private static readonly List<Vector3> _sharedNormals = new List<Vector3>(65535);
+        private static readonly List<int> _sharedIndices = new List<int>(65535);
+
         private Mesh bakedMesh;
 
         private float nextSampleTime;
@@ -355,16 +359,18 @@ namespace AeroFlow.Physics
             ref float pressureAccum,
             ref int sampleCount)
         {
-            Vector3[] vertices = mesh.vertices;
-            Vector3[] normals = mesh.normals;
-            if (vertices == null || vertices.Length == 0)
+            if (mesh == null) return false;
+            mesh.GetVertices(_sharedVertices);
+            mesh.GetNormals(_sharedNormals);
+            
+            if (_sharedVertices.Count == 0)
             {
                 return false;
             }
 
             bool any = false;
             int triStride = Mathf.Max(1, stride);
-            bool hasNormals = normals != null && normals.Length == vertices.Length;
+            bool hasNormals = _sharedNormals.Count == _sharedVertices.Count;
 
             for (int subMesh = 0; subMesh < mesh.subMeshCount; subMesh++)
             {
@@ -373,25 +379,25 @@ namespace AeroFlow.Physics
                     continue;
                 }
 
-                int[] triangles = mesh.GetIndices(subMesh);
-                if (triangles == null || triangles.Length < 3)
+                mesh.GetIndices(_sharedIndices, subMesh);
+                if (_sharedIndices.Count < 3)
                 {
                     continue;
                 }
 
-                for (int tri = 0; tri < triangles.Length; tri += 3 * triStride)
+                for (int tri = 0; tri < _sharedIndices.Count; tri += 3 * triStride)
                 {
-                    int ia = triangles[tri];
-                    int ib = triangles[tri + 1];
-                    int ic = triangles[tri + 2];
-                    if (ia < 0 || ib < 0 || ic < 0 || ia >= vertices.Length || ib >= vertices.Length || ic >= vertices.Length)
+                    int ia = _sharedIndices[tri];
+                    int ib = _sharedIndices[tri + 1];
+                    int ic = _sharedIndices[tri + 2];
+                    if (ia < 0 || ib < 0 || ic < 0 || ia >= _sharedVertices.Count || ib >= _sharedVertices.Count || ic >= _sharedVertices.Count)
                     {
                         continue;
                     }
 
-                    Vector3 a = localToWorld.MultiplyPoint3x4(vertices[ia]);
-                    Vector3 b = localToWorld.MultiplyPoint3x4(vertices[ib]);
-                    Vector3 c = localToWorld.MultiplyPoint3x4(vertices[ic]);
+                    Vector3 a = localToWorld.MultiplyPoint3x4(_sharedVertices[ia]);
+                    Vector3 b = localToWorld.MultiplyPoint3x4(_sharedVertices[ib]);
+                    Vector3 c = localToWorld.MultiplyPoint3x4(_sharedVertices[ic]);
                     Vector3 geometricNormal = Vector3.Cross(b - a, c - a);
                     float doubleArea = geometricNormal.magnitude;
                     if (doubleArea <= 1e-8f) continue;
@@ -399,7 +405,7 @@ namespace AeroFlow.Physics
                     Vector3 outwardNormal;
                     if (hasNormals)
                     {
-                        outwardNormal = localToWorld.MultiplyVector((normals[ia] + normals[ib] + normals[ic]) / 3f).normalized;
+                        outwardNormal = localToWorld.MultiplyVector((_sharedNormals[ia] + _sharedNormals[ib] + _sharedNormals[ic]) / 3f).normalized;
                         if (outwardNormal.sqrMagnitude < 1e-6f)
                         {
                             outwardNormal = geometricNormal.normalized;

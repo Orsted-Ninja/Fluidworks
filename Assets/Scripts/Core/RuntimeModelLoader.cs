@@ -67,20 +67,39 @@ namespace AeroFlow.Core
                 return;
             }
 
-            string visualPath = BrowseForVisualModel();
-            if (string.IsNullOrWhiteSpace(visualPath))
-            {
-                return;
-            }
-
-            string simulationPath = null;
-            if (promptForSimulationModel)
-            {
-                simulationPath = BrowseForSimulationModel();
-            }
-
             isLoadInProgress = true;
-            LoadModel(visualPath, simulationPath);
+
+            var filters = new[]
+            {
+                new ExtensionFilter("Visual Models", "glb", "gltf", "obj", "stl")
+            };
+
+            StandaloneFileBrowser.OpenFilePanelAsync("Open Visual Model", "", filters, false, (visualPaths) =>
+            {
+                string visualPath = visualPaths != null && visualPaths.Length > 0 ? visualPaths[0] : null;
+                if (string.IsNullOrWhiteSpace(visualPath))
+                {
+                    isLoadInProgress = false;
+                    return;
+                }
+
+                if (promptForSimulationModel)
+                {
+                    var simFilters = new[]
+                    {
+                        new ExtensionFilter("Simulation Mesh / CAD", "obj", "stl", "step", "stp", "iges", "igs", "glb", "gltf")
+                    };
+                    StandaloneFileBrowser.OpenFilePanelAsync("Optional Simulation Mesh / CAD", "", simFilters, false, (simPaths) =>
+                    {
+                        string simulationPath = simPaths != null && simPaths.Length > 0 ? simPaths[0] : null;
+                        LoadModel(visualPath, simulationPath);
+                    });
+                }
+                else
+                {
+                    LoadModel(visualPath, null);
+                }
+            });
 #else
             Debug.LogWarning("StandaloneFileBrowser is only supported on Desktop builds. Cannot open file picker.");
             string dummyPath = Path.Combine(Application.streamingAssetsPath, "model.glb");
@@ -186,6 +205,8 @@ namespace AeroFlow.Core
             {
                 DestroyModelRoot(currentModelInstance);
             }
+            
+            RuntimeModelLookup.ClearCache();
 
             currentModelInstance = null;
             CurrentDescriptor = null;
@@ -1139,25 +1160,7 @@ namespace AeroFlow.Core
         }
 
 #if UNITY_STANDALONE || UNITY_EDITOR
-        private static string BrowseForVisualModel()
-        {
-            var filters = new[]
-            {
-                new ExtensionFilter("Visual Models", "glb", "gltf", "obj", "stl")
-            };
-            string[] paths = StandaloneFileBrowser.OpenFilePanel("Open Visual Model", "", filters, false);
-            return paths != null && paths.Length > 0 ? paths[0] : null;
-        }
-
-        private static string BrowseForSimulationModel()
-        {
-            var filters = new[]
-            {
-                new ExtensionFilter("Simulation Mesh / CAD", "obj", "stl", "step", "stp", "iges", "igs", "glb", "gltf")
-            };
-            string[] paths = StandaloneFileBrowser.OpenFilePanel("Optional Simulation Mesh / CAD", "", filters, false);
-            return paths != null && paths.Length > 0 ? paths[0] : null;
-        }
+        // Removed synchronous BrowseForVisualModel and BrowseForSimulationModel
 #endif
 
         private void OnDestroy()

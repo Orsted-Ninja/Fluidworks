@@ -107,6 +107,18 @@ namespace AeroFlow.Sim3D.RotatingMachinery
         int[] obstacleMaskCache;
         int obstacleMaskSignature;
         bool hasObstacleMaskSignature;
+        int lastLoggedObstacleMaskSolidCount = -1;
+        float nextObstacleLogTime;
+
+        private Vector3[] obstacleVelocityCache;
+        private PartRegistry cachedPartRegistry;
+        private Transform cachedPartRegistryRoot;
+        private string lastVisualizationMode = "";
+
+        private UnityEngine.Rendering.AsyncGPUReadbackRequest velReq;
+        private UnityEngine.Rendering.AsyncGPUReadbackRequest pReq;
+        private UnityEngine.Rendering.AsyncGPUReadbackRequest divReq;
+        private bool diagnosticsPending = false;
         Vector3 lastCellSize = Vector3.one;
         Vector3 lastBoundsCenter, lastBoundsSize;
         Vector3[] diagnosticsVelocityCache;
@@ -343,7 +355,12 @@ namespace AeroFlow.Sim3D.RotatingMachinery
         {
             get {
                 var root = GetLoadedModelRoot();
-                return root != null ? root.GetComponent<PartRegistry>() : null;
+                if (root != cachedPartRegistryRoot)
+                {
+                    cachedPartRegistryRoot = root;
+                    cachedPartRegistry = root != null ? root.GetComponent<PartRegistry>() : null;
+                }
+                return cachedPartRegistry;
             }
         }
 
@@ -559,13 +576,21 @@ namespace AeroFlow.Sim3D.RotatingMachinery
             // Update velocity field from segmented parts
             if (registry != null)
             {
-                Vector3[] velocities = new Vector3[gridCount];
-                ObstacleVoxelizer.BuildVelocityField(registry, domain, gridSizeX, gridSizeY, gridSizeZ, obstacleMaskCache, velocities);
-                obstacleVelocityBuffer.SetData(velocities);
+                if (obstacleVelocityCache == null || obstacleVelocityCache.Length != gridCount)
+                {
+                    obstacleVelocityCache = new Vector3[gridCount];
+                }
+                ObstacleVoxelizer.BuildVelocityField(registry, domain, gridSizeX, gridSizeY, gridSizeZ, obstacleMaskCache, obstacleVelocityCache);
+                obstacleVelocityBuffer.SetData(obstacleVelocityCache);
             }
             else
             {
-                obstacleVelocityBuffer.SetData(new Vector3[gridCount]);
+                if (obstacleVelocityCache == null || obstacleVelocityCache.Length != gridCount)
+                {
+                    obstacleVelocityCache = new Vector3[gridCount];
+                }
+                System.Array.Clear(obstacleVelocityCache, 0, obstacleVelocityCache.Length);
+                obstacleVelocityBuffer.SetData(obstacleVelocityCache);
             }
         }
 
@@ -656,6 +681,9 @@ namespace AeroFlow.Sim3D.RotatingMachinery
         private void ApplyVisualizationState()
         {
             string normalized = NormalizeVisualizationMode(settings.visualizationMode);
+            if (normalized == lastVisualizationMode) return;
+            lastVisualizationMode = normalized;
+
             bool surfaceMode = string.Equals(normalized, WindTunnelSimulation3D.VisualizationSurfacePressure, System.StringComparison.OrdinalIgnoreCase)
                 || string.Equals(normalized, WindTunnelSimulation3D.VisualizationSurfaceFriction, System.StringComparison.OrdinalIgnoreCase);
 
@@ -755,9 +783,27 @@ namespace AeroFlow.Sim3D.RotatingMachinery
             if (diagnosticsDivergenceCache == null || diagnosticsDivergenceCache.Length != gridCount)
                 diagnosticsDivergenceCache = new float[gridCount];
 
-            gridVelocity.GetData(diagnosticsVelocityCache);
-            gridPressure.GetData(diagnosticsPressureCache);
-            gridDivergence.GetData(diagnosticsDivergenceCache);
+            if (!diagnosticsPending)
+            {
+                velReq = UnityEngine.Rendering.AsyncGPUReadback.Request(gridVelocity);
+                pReq = UnityEngine.Rendering.AsyncGPUReadback.Request(gridPressure);
+                divReq = UnityEngine.Rendering.AsyncGPUReadback.Request(gridDivergence);
+                diagnosticsPending = true;
+                return;
+            }
+
+            if (!velReq.done || !pReq.done || !divReq.done)
+            {
+                return;
+            }
+
+            diagnosticsPending = false;
+            
+            if (velReq.hasError || pReq.hasError || divReq.hasError) return;
+
+            velReq.GetData<Vector3>().CopyTo(diagnosticsVelocityCache);
+            pReq.GetData<float>().CopyTo(diagnosticsPressureCache);
+            divReq.GetData<float>().CopyTo(diagnosticsDivergenceCache);
 
             float sumSpeed = 0f, maxSpeed = 0f, sumAbsDiv = 0f;
             float sumSwirl = 0f;

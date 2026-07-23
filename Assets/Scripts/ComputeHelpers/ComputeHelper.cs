@@ -342,17 +342,8 @@ public static class ComputeHelper
         return buffer;
     }
 
-    // Read number of elements in append buffer
-    public static int ReadAppendBufferLength(ComputeBuffer appendBuffer)
-    {
-        ComputeBuffer countBuffer = new ComputeBuffer(1, sizeof(int), ComputeBufferType.Raw);
-        ComputeBuffer.CopyCount(appendBuffer, countBuffer, 0);
-
-        int[] data = new int[1];
-        countBuffer.GetData(data);
-        Release(countBuffer);
-        return data[0];
-    }
+    // Read number of elements in append buffer (Removed to prevent synchronous GPU stalls)
+    // public static int ReadAppendBufferLength(ComputeBuffer appendBuffer) ...
 
     // ------ Set compute shader properties ------
 

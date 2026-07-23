@@ -1,4 +1,4 @@
-﻿#pragma kernel ExternalForces
+#pragma kernel ExternalForces
 #pragma kernel UpdateSpatialHash
 #pragma kernel CalculateDensities
 #pragma kernel CalculatePressureForce
@@ -154,8 +154,10 @@ void CalculateDensities (uint3 id : SV_DispatchThreadID)
 		uint key = KeyFromHash(hash, numParticles);
 		uint currIndex = SpatialOffsets[key];
 
-		while (currIndex < numParticles)
+		int neighborCount = 0;
+		while (currIndex < numParticles && neighborCount < 250)
 		{
+			neighborCount++;
 			uint3 indexData = SpatialIndices[currIndex];
 			currIndex ++;
 			// Exit if no longer looking at correct bin
@@ -204,8 +206,10 @@ void CalculatePressureForce (uint3 id : SV_DispatchThreadID)
 		uint key = KeyFromHash(hash, numParticles);
 		uint currIndex = SpatialOffsets[key];
 
-		while (currIndex < numParticles)
+		int neighborCount = 0;
+		while (currIndex < numParticles && neighborCount < 250)
 		{
+			neighborCount++;
 			uint3 indexData = SpatialIndices[currIndex];
 			currIndex ++;
 			// Exit if no longer looking at correct bin
@@ -266,8 +270,10 @@ void CalculateViscosity (uint3 id : SV_DispatchThreadID)
 		uint key = KeyFromHash(hash, numParticles);
 		uint currIndex = SpatialOffsets[key];
 
-		while (currIndex < numParticles)
+		int neighborCount = 0;
+		while (currIndex < numParticles && neighborCount < 250)
 		{
+			neighborCount++;
 			uint3 indexData = SpatialIndices[currIndex];
 			currIndex ++;
 			// Exit if no longer looking at correct bin

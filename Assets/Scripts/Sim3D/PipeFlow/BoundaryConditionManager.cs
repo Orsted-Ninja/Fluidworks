@@ -91,8 +91,28 @@ namespace AeroFlow.Sim3D.PipeFlow
         {
             if (index < 0 || index >= assignments.Count) return;
             assignments[index].type = type;
-            RefreshCaps();
+            UpdateCapMaterials();
             OnAssignmentsChanged?.Invoke();
+        }
+
+        public void UpdateCapMaterials()
+        {
+            EnsureMaterials();
+            for (int i = 0; i < assignments.Count; i++)
+            {
+                var a = assignments[i];
+                if (a.capObject == null) continue;
+                int mi = (int)a.type;
+                
+                var capRenderer = a.capObject.GetComponent<MeshRenderer>();
+                if (capRenderer != null) capRenderer.sharedMaterial = capMats[mi];
+
+                if (a.capObject.transform.childCount > 0)
+                {
+                    var ringRenderer = a.capObject.transform.GetChild(0).GetComponent<MeshRenderer>();
+                    if (ringRenderer != null) ringRenderer.sharedMaterial = ringMats[mi];
+                }
+            }
         }
 
         public bool HasManualAssignments()
@@ -427,7 +447,20 @@ namespace AeroFlow.Sim3D.PipeFlow
         {
             foreach (var a in assignments)
             {
-                if (a.capObject != null) { Destroy(a.capObject); a.capObject = null; }
+                if (a.capObject != null) 
+                { 
+                    var mf = a.capObject.GetComponent<MeshFilter>();
+                    if (mf != null && mf.sharedMesh != null) Destroy(mf.sharedMesh);
+                    
+                    if (a.capObject.transform.childCount > 0)
+                    {
+                        var ringMf = a.capObject.transform.GetChild(0).GetComponent<MeshFilter>();
+                        if (ringMf != null && ringMf.sharedMesh != null) Destroy(ringMf.sharedMesh);
+                    }
+
+                    Destroy(a.capObject); 
+                    a.capObject = null; 
+                }
             }
         }
 

@@ -381,28 +381,10 @@ namespace AeroFlow.UI
 
         private void HandleSimulationSpeedChanged(float speed)
         {
-            var sim3D = FindAnyObjectByType<Simulation3D>();
-            if (sim3D != null)
+            var simMgr = SimulationManager.Instance != null ? SimulationManager.Instance : FindAnyObjectByType<SimulationManager>();
+            if (simMgr != null)
             {
-                sim3D.settings.timeScale = speed;
-            }
-
-            var windSim = FindAnyObjectByType<WindTunnelSimulation3D>();
-            if (windSim != null)
-            {
-                windSim.settings.timeScale = speed;
-            }
-
-            var pipeSim = FindAnyObjectByType<PipeFlowSimulation3D>();
-            if (pipeSim != null)
-            {
-                pipeSim.settings.timeScale = speed;
-            }
-
-            var machinerySim = FindAnyObjectByType<RotatingMachinerySimulation3D>();
-            if (machinerySim != null)
-            {
-                machinerySim.settings.timeScale = speed;
+                simMgr.SetSimulationTimeScale(speed);
             }
         }
 

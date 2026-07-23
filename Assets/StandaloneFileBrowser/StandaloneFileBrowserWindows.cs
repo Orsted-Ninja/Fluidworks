@@ -122,7 +122,9 @@ namespace SFB
                 lines.Add("$dialog.InitialDirectory = '" + EscapeForPowerShell(initialDirectory) + "'");
             }
 
-            lines.Add("if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {");
+            lines.Add("$form = New-Object System.Windows.Forms.Form");
+            lines.Add("$form.TopMost = $true");
+            lines.Add("if ($dialog.ShowDialog($form) -eq [System.Windows.Forms.DialogResult]::OK) {");
             lines.Add("  $dialog.FileNames | ForEach-Object { [Console]::Out.WriteLine($_) }");
             lines.Add("}");
 
@@ -146,7 +148,9 @@ namespace SFB
                 lines.Add("$dialog.SelectedPath = '" + EscapeForPowerShell(initialDirectory) + "'");
             }
 
-            lines.Add("if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {");
+            lines.Add("$form = New-Object System.Windows.Forms.Form");
+            lines.Add("$form.TopMost = $true");
+            lines.Add("if ($dialog.ShowDialog($form) -eq [System.Windows.Forms.DialogResult]::OK) {");
             lines.Add("  [Console]::Out.WriteLine($dialog.SelectedPath)");
             lines.Add("}");
 
@@ -187,7 +191,9 @@ namespace SFB
                 lines.Add("$dialog.AddExtension = $true");
             }
 
-            lines.Add("if ($dialog.ShowDialog() -eq [System.Windows.Forms.DialogResult]::OK) {");
+            lines.Add("$form = New-Object System.Windows.Forms.Form");
+            lines.Add("$form.TopMost = $true");
+            lines.Add("if ($dialog.ShowDialog($form) -eq [System.Windows.Forms.DialogResult]::OK) {");
             lines.Add("  [Console]::Out.WriteLine($dialog.FileName)");
             lines.Add("}");
 

@@ -80,6 +80,11 @@ public class NavierStokesGridSolver : MonoBehaviour
     public int ObstacleSphereCount => obstacleSphereCount;
     public int ObstacleMaskSolidCount => obstacleMaskSolidCount;
 
+    private UnityEngine.Rendering.AsyncGPUReadbackRequest velReq;
+    private UnityEngine.Rendering.AsyncGPUReadbackRequest pReq;
+    private UnityEngine.Rendering.AsyncGPUReadbackRequest divReq;
+    private bool diagnosticsPending = false;
+
     public bool TryGetDiagnostics(out NavierDiagnostics value)
     {
         value = diagnostics;
@@ -510,9 +515,30 @@ public class NavierStokesGridSolver : MonoBehaviour
             diagnosticsDivergenceCache = new float[gridCount];
         }
 
-        gridVelocity.GetData(diagnosticsVelocityCache);
-        gridPressure.GetData(diagnosticsPressureCache);
-        gridDivergence.GetData(diagnosticsDivergenceCache);
+        if (!diagnosticsPending)
+        {
+            velReq = UnityEngine.Rendering.AsyncGPUReadback.Request(gridVelocity);
+            pReq = UnityEngine.Rendering.AsyncGPUReadback.Request(gridPressure);
+            divReq = UnityEngine.Rendering.AsyncGPUReadback.Request(gridDivergence);
+            diagnosticsPending = true;
+            return;
+        }
+
+        if (!velReq.done || !pReq.done || !divReq.done)
+        {
+            return;
+        }
+
+        diagnosticsPending = false;
+
+        if (velReq.hasError || pReq.hasError || divReq.hasError)
+        {
+            return;
+        }
+
+        velReq.GetData<Vector3>().CopyTo(diagnosticsVelocityCache);
+        pReq.GetData<float>().CopyTo(diagnosticsPressureCache);
+        divReq.GetData<float>().CopyTo(diagnosticsDivergenceCache);
         diagnosticsSnapshotVersion++;
 
         float sumSpeed = 0f;
